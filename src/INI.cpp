@@ -4,6 +4,9 @@
 // -----------------------------------------------------------------------------
 INI::INI() {
 }
+INI::INI(string sFile) {
+	load(sFile);
+}
 
 bool INI::load(string sFile) {
 	ifstream ifs(sFile.c_str());
@@ -114,7 +117,7 @@ float INI::getFloat(string sKey, float nDefault) {
 	if(!get(sKey,val)) {
 		return nDefault;
 	}
-	convert<float>(val);
+	return convert<float>(val);
 }
 
 double INI::getDouble(string sKey, double nDefault) {
@@ -122,7 +125,7 @@ double INI::getDouble(string sKey, double nDefault) {
 	if(!get(sKey,val)) {
 		return nDefault;
 	}
-	convert<double>(val);
+	return convert<double>(val);
 }
 
 bool INI::getBool(string sKey, bool bDefault) {

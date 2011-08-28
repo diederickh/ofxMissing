@@ -3,3 +3,4 @@
 #include "INI.h"
 #include "Date.h"
 #include "Utils.h"
+#include "Dictionary.h"

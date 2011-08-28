@@ -41,6 +41,7 @@ struct INISortedEntry {
 class INI {
 public:	
 	INI();
+	INI(string sFile);
 	
 	// storage
 	bool load(string sFile);
@@ -137,4 +138,5 @@ inline ostream& operator<<(ostream& os, const INI& ini) {
 		}
 		++it;
 	}
+	return os;
 }
