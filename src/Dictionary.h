@@ -118,5 +118,7 @@ private:
 		string*		s;
 		DictionaryMap* m;
 	} value;
+	
+	
 };
 #endif

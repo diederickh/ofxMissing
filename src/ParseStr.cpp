@@ -7,7 +7,7 @@ ParseStrResult parse_str(string str) {
 		try {
 			StringTokenizer split_var(raw_vars[i], "=");
 			if(split_var.count() != 2) {
-				cout << "parse_str error: split_var not var=value pair" << endl;
+				cout << "parse_str error: split_var not var=value pair, at: " << raw_vars[i] << endl;
 				continue;
 			}
 			//cout << split_var[0] << " = " << split_var[1] << endl;
@@ -18,6 +18,13 @@ ParseStrResult parse_str(string str) {
 		}
 	}
 	return result;
+}
+
+bool ParseStrResult::hasField(string key) {
+	if(vars.find(key) == vars.end()) {
+		return false;
+	}
+	return true;
 }
 
 

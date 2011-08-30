@@ -45,6 +45,7 @@ class ParseStrResult {
 public:
 	ParseStrResult() {
 	}
+	bool hasField(string key);
 	string operator[](const string& key);
 	map<string, string> vars;
 	
