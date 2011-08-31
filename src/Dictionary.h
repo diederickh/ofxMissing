@@ -72,6 +72,27 @@ public:
 	Dictionary& operator[](const char* key);
 	Dictionary& operator[](const uint32_t& key);
 	
+	// retrieve as a forced type
+	uint8_t  asUInt8();
+	uint16_t asUInt16();
+	uint32_t asUInt32();
+	uint64_t asUint64();
+	
+	int8_t 	 asInt8();
+	int16_t  asInt16();
+	int32_t  asInt32();
+	int64_t  asInt64();
+	
+	// Change internal type
+	Dictionary& toInt8();
+	Dictionary& toInt16();
+	Dictionary& toInt32();
+	Dictionary& toInt64();
+	Dictionary& toUInt8();
+	Dictionary& toUInt16();
+	Dictionary& toUInt32();
+	Dictionary& toUint64();
+	
 	// type casting
 	operator bool();
 	operator int8_t();
@@ -101,9 +122,12 @@ public:
 	uint32_t getMapDenseSize();
 	void pushToArray(Dictionary dict);
 
+	void removeKey(const string& key);
+	void removeAt(const uint32_t index);
 
-private:	
 	DictionaryType type;
+private:	
+	
 	union {
 		bool 		b;
 		int8_t 		i8;

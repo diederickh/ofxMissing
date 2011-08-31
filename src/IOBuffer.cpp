@@ -1,4 +1,6 @@
 #include "IOBuffer.h"
+#include "Endianness.h"
+
 #include "ofMain.h" // for debuggin
 IOBuffer::IOBuffer() 
 :buffer(NULL)
@@ -151,6 +153,7 @@ void IOBuffer::recycle() {
 	published = 0;
 }
 
+/*
 bool IOBuffer::consumeLine(string& line) {
 	for(int i = 0; i < published; ++i) {
 		if(buffer[i] == 0x00) {
@@ -163,7 +166,115 @@ bool IOBuffer::consumeLine(string& line) {
 	
 	return false;
 }
+*/
 
+
+
+
+// Retrieve from buffer and return data
+//------------------------------------------------------------------------------
+void IOBuffer::consumeBytes(uint8_t* buf, uint32_t numBytes) {
+	memcpy(buf,buffer+consumed, numBytes);
+	consumed += numBytes;
+}
+
+uint8_t IOBuffer::consumeByte() {
+	return consumeUInt8();
+}
+
+uint8_t IOBuffer::consumeUInt8() {
+	uint8_t val = 0;
+	memcpy(&val, buffer+consumed, 1);
+	consumed += 1;
+	return val;
+}
+
+uint16_t IOBuffer::consumeUInt16() {
+	uint16_t val = 0;
+	memcpy(&val, buffer+consumed, 2);
+	consumed += 2;
+	return val;
+
+}
+
+uint32_t IOBuffer::consumeUInt32() {
+	uint32_t val = 0;
+	memcpy(&val, buffer+consumed, 4);
+	consumed += 4;
+	return val;
+}
+
+uint64_t IOBuffer::consumeUInt64() {
+	uint64_t val = 0;
+	memcpy(&val, buffer+consumed, 8);
+	consumed += 8;
+	return val;
+}
+
+int8_t  IOBuffer::consumeInt8() {
+	int8_t val = 0;
+	memcpy(&val, buffer+consumed, 1);
+	consumed += 1;
+	return val;
+}
+
+int16_t IOBuffer::consumeInt16() {
+	int16_t val = 0;
+	memcpy(&val, buffer+consumed, 2);
+	consumed += 2;
+	return val;
+}
+
+int32_t IOBuffer::consumeInt32() {
+	int32_t val = 0;
+	memcpy(&val, buffer+consumed, 4);
+	consumed += 4;
+	return val;
+}
+
+int64_t IOBuffer::consumeInt64() {
+	int64_t val = 0;
+	memcpy(&val, buffer+consumed, 8);
+	consumed += 8;
+	return val;
+}
+
+// when you assume the data is big endian, convert it to little endian.
+// -----------------------------------------------------------------------------
+uint16_t IOBuffer::consumeLittleEndianUInt16() {
+	uint16_t val = 0;
+	memcpy(&val, buffer+consumed, 2);
+	consumed += 2;
+	val = ntohsex(val);
+	return val;
+}
+
+uint32_t IOBuffer::consumeLittleEndianUInt32() {
+	uint32_t val = 0;
+	memcpy(&val, buffer+consumed, 4);
+	consumed += 4;
+	val = ntohlex(val);
+	return val;
+}
+
+uint64_t IOBuffer::consumeLittleEndianUInt64() {
+	uint64_t val = 0;
+	printf("@todo IOBuffer, no handle for little endian 64 yet\n");
+	/*
+	memcpy(&val, buffer+consumed, 8);
+	consumed += 8;
+	val = ntohsex(val);
+	*/
+	return val;
+}
+
+
+
+
+// Searching for bytes in buffer and returning strings
+// -----------------------------------------------------------------------------
+
+// returns where we found the string, or 0 when not found.
 int IOBuffer::consumeUntil(uint8_t until, string& found) {
 	for(int i = consumed; i < published; ++i) {
 		found.push_back((char)buffer[i]);
@@ -175,12 +286,13 @@ int IOBuffer::consumeUntil(uint8_t until, string& found) {
 	return 0;
 }
 
+// consume up to the given string, if not foudn return 0 else bytes consumed
 int IOBuffer::consumeUntil(string until, string& found) {
 	int search_size = until.size();
 	const char* search = until.c_str();
 	int k = 0;
 	for(int i = consumed; i < published; ++i) {
-		cout << "store:" << (char)buffer[i] << endl;
+		//cout << "store:" << (char)buffer[i] << endl;
 		found.push_back((char)buffer[i]);
 		if(buffer[i] == search[0]) {
 			// out of buffer.
@@ -196,7 +308,6 @@ int IOBuffer::consumeUntil(string until, string& found) {
 			// we found the search string, update consumed!
 			if(k == search_size) {
 				found.append((char*)buffer+(i+1), search_size-1);
-				cout << "+++++++++++++++++++++++++++ FOUND UNTIL: "<< until << " ++++++++++++++++++++" << endl;
 				consumed += (i+search_size);
 				return consumed;
 			}
@@ -206,19 +317,18 @@ int IOBuffer::consumeUntil(string until, string& found) {
 	return 0;
 }	
 
-void IOBuffer::consumeByte(uint8_t& byte) {
-	byte = buffer[consumed];
-	consumed++;
+string IOBuffer::consumeString(uint32_t upToNumBytes) {
+	string str((char*)buffer+consumed, upToNumBytes);
+	consumed += upToNumBytes;
+	return str;
 }
 
-void IOBuffer::consumeBytes(uint8_t* buf, uint32_t numBytes) {
-	memcpy(buf,buffer+consumed, numBytes);
-	consumed += numBytes;
-}
 
+// helpers
+//------------------------------------------------------------------------------
 void IOBuffer::printHex(uint32_t start, uint32_t end) {
 	if(start == 0 && end == 0) {
-		start = 0;
+		start = consumed;
 		end = published;
 	}
 	if(end > published) {
@@ -237,21 +347,3 @@ void IOBuffer::printHex(uint32_t start, uint32_t end) {
 	printf("\n");
 }
 
-void IOBuffer::consumeString(string& str, uint32_t numBytes) {
-	str.assign((char*)buffer+consumed, numBytes);
-	consumed += numBytes;
-}
-
-void IOBuffer::consumeUint8(uint8_t& buff) {
-	consumeByte(buff);
-}
-
-void IOBuffer::consumeUint16(uint16_t& buff) {
-	memcpy(&buff, buffer+consumed, 2);
-	consumed += 2;
-}
-
-void IOBuffer::consumeUint32(uint32_t& buff) {
-	memcpy(&buff, buffer+consumed, 4);
-	consumed += 4;
-}

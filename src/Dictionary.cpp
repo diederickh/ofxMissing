@@ -331,6 +331,117 @@ Dictionary::operator string() {
 	};
 	return "";
 }
+
+
+// Change internal type
+//------------------------------------------------------------------------------
+Dictionary& Dictionary::toInt8() {
+	type = D_INT8;
+	return *this;
+}
+
+Dictionary& Dictionary::toInt16() {
+	type = D_INT16;
+	return *this;
+}
+
+Dictionary& Dictionary::toInt32() {
+	type = D_INT32;
+	return *this;
+}
+
+Dictionary& Dictionary::toInt64() {
+	type = D_INT64;
+	return *this;
+}
+
+Dictionary& Dictionary::toUInt8() {
+	type = D_UINT8;
+	return *this;
+}
+
+Dictionary& Dictionary::toUInt16() {
+	type = D_UINT16;
+	return *this;
+}
+
+Dictionary& Dictionary::toUInt32() {
+	type = D_UINT32;
+	return *this;
+
+}
+
+Dictionary& Dictionary::toUint64() {
+	type = D_UINT64;
+	return *this;
+}
+
+// Retrieve as forced type
+//------------------------------------------------------------------------------
+uint8_t Dictionary::asUInt8() {
+	uint8_t val;
+	string as_str =(string)(*this);
+	istringstream is(as_str);
+	is >> val;
+	return val;
+}
+
+uint16_t Dictionary::asUInt16() {
+	uint16_t val;
+	string as_str =(string)(*this);
+	istringstream is(as_str);
+	is >> val;
+	return val;
+}
+
+uint32_t Dictionary::asUInt32() {
+	uint32_t val;
+	string as_str =(string)(*this);
+	istringstream is(as_str);
+	is >> val;
+	return val;
+}
+
+uint64_t Dictionary::asUint64() {
+	uint64_t val;
+	string as_str =(string)(*this);
+	istringstream is(as_str);
+	is >> val;
+	return val;
+}
+
+int8_t Dictionary::asInt8() {
+	int8_t val;
+	string as_str =(string)(*this);
+	istringstream is(as_str);
+	is >> val;
+	return val;
+}
+
+int16_t Dictionary::asInt16() {
+	int16_t val;
+	string as_str =(string)(*this);
+	istringstream is(as_str);
+	is >> val;
+	return val;
+}
+
+int32_t  Dictionary::asInt32() {
+	int32_t val;
+	string as_str =(string)(*this);
+	istringstream is(as_str);
+	is >> val;
+	return val;
+}
+
+int64_t  Dictionary::asInt64() {
+	int64_t val;
+	string as_str =(string)(*this);
+	istringstream is(as_str);
+	is >> val;
+	return val;
+}
+
 // Serialization
 //------------------------------------------------------------------------------
 bool Dictionary::serializeToJSON(string &result) {
@@ -501,5 +612,22 @@ void Dictionary::pushToArray(Dictionary dict) {
 	(*this)[(uint32_t)this->getMapDenseSize()] = dict;
 }
 
+void Dictionary::removeKey(const string& key) {
+	if(type != D_MAP) {
+		printf("cannot removeKey(), we are not a map.\n");
+		return;
+	}
+	value.m->children.erase(key);
+}
+
+void Dictionary::removeAt(const uint32_t index) {
+	if(type != D_MAP) {
+		printf("cannot removeAt(), we are not a map.\n");
+		return;
+	}
+	stringstream ss;
+	ss << VAR_INDEX_VALUE << index;
+	value.m->children.erase(ss.str());
+}
 
 	
