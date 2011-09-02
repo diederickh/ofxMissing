@@ -135,6 +135,55 @@ void IOBuffer::storeRepeat(uint8_t byte, uint32_t numBytes) {
 	published += numBytes;
 }
 
+void IOBuffer::storeUInt8(uint8_t byte) {
+	storeByte(byte);
+}
+
+void IOBuffer::storeUInt16(uint16_t data) {
+	ensureSize(16);
+	memcpy(buffer+published, &data, 2);
+	published += 2;
+}
+
+void IOBuffer::storeUInt32(uint32_t data) {
+	ensureSize(32);
+	memcpy(buffer+published, &data, 4);
+	published += 4;
+}
+
+void IOBuffer::storeBigEndianUInt16(uint16_t data) {
+	ensureSize(16);
+	data = htonsex(data);
+	memcpy(buffer+published, &data, 2);
+	published += 2;
+}
+
+void IOBuffer::storeBigEndianUInt32(uint32_t data) {
+	ensureSize(4);
+	data = htonlex(data);
+	memcpy(buffer+published, &data, 4);
+	published += 4;
+}
+
+void IOBuffer::storeString(string& data) {
+	uint32_t len = (uint32_t)data.length();
+	ensureSize(len);
+	memcpy(buffer+published, (uint8_t *)data.c_str(), len);
+	published += len;
+}
+
+// copy data from another buffer.
+void IOBuffer::storeBuffer(IOBuffer& other) {
+	storeBuffer(other, other.getNumBytesStored());	
+}
+
+void IOBuffer::storeBuffer(IOBuffer& other, uint32_t numBytes) {
+	ensureSize(numBytes);
+	memcpy(buffer+published, other.buffer, numBytes);
+	published += numBytes;
+}
+
+
 bool IOBuffer::ignore(uint32_t numBytes) {
 	consumed += numBytes;
 	recycle();	
@@ -145,6 +194,10 @@ bool IOBuffer::reuse(uint32_t numBytes) {
 	return true;
 }
 
+uint32_t IOBuffer::getNumBytesStored() {
+	return published;
+}
+
 void IOBuffer::recycle() {
 	if(consumed != published) {
 		return;
@@ -152,23 +205,6 @@ void IOBuffer::recycle() {
 	consumed = 0;
 	published = 0;
 }
-
-/*
-bool IOBuffer::consumeLine(string& line) {
-	for(int i = 0; i < published; ++i) {
-		if(buffer[i] == 0x00) {
-			printf("line end on %d\n", i);
-		}
-		else {
-			printf("c: %d\n", buffer[i]);
-		}
-	}
-	
-	return false;
-}
-*/
-
-
 
 
 // Retrieve from buffer and return data

@@ -8,6 +8,11 @@ Dictionary::Dictionary() {
 	memset(&value, 0, sizeof(value));
 }
 
+
+Dictionary::Dictionary(const Dictionary& val) {
+	copyFrom(val);
+}
+
 Dictionary::Dictionary(const bool& val) {
 	type = D_BOOL;
 	memset(&value, 0, sizeof(value));
@@ -82,6 +87,18 @@ void Dictionary::reset() {
 			delete value.s;
 			break;
 		}
+		case D_MAP: {
+			printf("reset map.\n");
+			delete value.m; 
+			break;
+		}
+		case D_NULL: {
+			break;
+		}
+		default: {
+			printf("@todo reset, check if all allocated types are supported!\n");
+			break;
+		}
 	};
 	type = D_NULL;
 	memset(&value, 0, sizeof(value));
@@ -90,6 +107,33 @@ void Dictionary::reset() {
 
 // Operators
 // -----------------------------------------------------------------------------
+Dictionary& Dictionary::operator=(const Dictionary& other) {
+	reset();
+	copyFrom(other);
+	return *this;
+}
+
+// we define this inlined function (so external usage will give unresolved)
+void Dictionary::copyFrom(const Dictionary& other) {
+	type = other.type;
+	memset(&value, 0, sizeof(value));
+	switch(other.type) {
+		case D_STRING: {
+			value.s = new string(*other.value.s);
+			break;
+		}
+		case D_MAP: {	
+			value.m = new DictionaryMap(*other.value.m);
+			break;
+		}
+		default:{
+			memcpy(&value, &other.value, sizeof(value));
+			break;
+		}
+	};
+}
+
+	
 Dictionary& Dictionary::operator=(const bool &val) {
 	reset();
 	type = D_BOOL;
@@ -582,6 +626,9 @@ uint32_t Dictionary::getMapSize() {
 
 }
 
+// size of 'none' name=value pairs (so total number of alements which 
+// are indexed by a uint32_t. Internally these are stored using a 
+// special marker key. See the  "VAR_INDEX_VALUE" define. 
 uint32_t Dictionary::getMapDenseSize() {
 	if(type == D_NULL) {
 		return 0;
@@ -628,6 +675,24 @@ void Dictionary::removeAt(const uint32_t index) {
 	stringstream ss;
 	ss << VAR_INDEX_VALUE << index;
 	value.m->children.erase(ss.str());
+}
+
+// Iterate over values.
+//------------------------------------------------------------------------------
+map<string, Dictionary>::iterator Dictionary::begin() {
+	if(type != D_MAP) {
+		map<string,Dictionary> tmp;
+		return tmp.begin();
+	}
+	return value.m->children.begin();
+}
+
+map<string, Dictionary>::iterator Dictionary::end() {
+	if(type != D_MAP) {
+		map<string,Dictionary> tmp;
+		return tmp.end();
+	}
+	return value.m->children.end();
 }
 
 	

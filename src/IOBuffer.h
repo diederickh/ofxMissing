@@ -25,6 +25,7 @@ public:
 	IOBuffer();
 	virtual ~IOBuffer();
 
+	
 	// setup
 	void setup();
 	void setup(uint32_t expectedSize);
@@ -37,8 +38,21 @@ public:
 	bool storeBytes(const char* someData, const uint32_t numBytes);
 	bool storeBytes(const uint8_t* someData, const uint32_t numBytes);
 	void storeByte(uint8_t byte);
-	void storeRepeat(uint8_t byte, uint32_t numBytes);
-		
+	void storeUInt8(uint8_t byte);
+	void storeUInt16(uint16_t data);
+	void storeUInt32(uint32_t data);
+	void storeRepeat(uint8_t byte, uint32_t numBytes); // rename!
+	void storeBuffer(IOBuffer& other); // copies only stored data
+	void storeBuffer(IOBuffer& other, uint32_t numBytes);
+
+	void storeString(string& data);
+	void storeBigEndianUInt16(uint16_t data);
+	void storeBigEndianUInt32(uint32_t data);
+	
+	// get the number of bytes published.
+	uint32_t getNumBytesStored();
+	
+					
 	// reading data back from buffer moving read head
 	int consumeUntil(uint8_t until, string& found);
 	int consumeUntil(string until, string& found);

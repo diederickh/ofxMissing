@@ -39,6 +39,7 @@ class Dictionary {
 public:
 	// constructors.
 	Dictionary();
+	Dictionary(const Dictionary& val);
 	Dictionary(const bool& val);
 	Dictionary(const double &val);
 	Dictionary(const string &val);
@@ -53,6 +54,7 @@ public:
 	Dictionary(const uint64_t &val);
 	
 	// assignment operators.
+	Dictionary& operator=(const Dictionary& val);
 	Dictionary& operator=(const bool &val);
 	Dictionary& operator=(const double &val);
 	Dictionary& operator=(const string &val);
@@ -126,6 +128,8 @@ public:
 	void removeAt(const uint32_t index);
 
 	DictionaryType type;
+	map<string, Dictionary>::iterator begin();
+	map<string, Dictionary>::iterator end();
 private:	
 	
 	union {
@@ -143,6 +147,6 @@ private:
 		DictionaryMap* m;
 	} value;
 	
-	
+	void copyFrom(const Dictionary& other);
 };
 #endif
