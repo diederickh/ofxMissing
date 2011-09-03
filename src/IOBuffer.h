@@ -4,8 +4,10 @@
 #include <inttypes.h>
 #include <string>
 #include <algorithm>
+#include <fstream>
 
 using std::string;
+using std::ifstream;
 
 // Based on CRTMP server source code.
 
@@ -30,6 +32,8 @@ public:
 	void setup();
 	void setup(uint32_t expectedSize);
 		
+	bool loadFile(string path);	
+		
 	// moving the read head
 	bool reuse(uint32_t numBytes); // opposite of ignore
 	bool ignore(uint32_t numBytes); 
@@ -45,9 +49,11 @@ public:
 	void storeBuffer(IOBuffer& other); // copies only stored data
 	void storeBuffer(IOBuffer& other, uint32_t numBytes);
 
-	void storeString(string& data);
+	void storeString(string data);
 	void storeBigEndianUInt16(uint16_t data);
 	void storeBigEndianUInt32(uint32_t data);
+	void storeBigEndianUInt64(uint64_t data);
+	void storeBigEndianDouble(double data);
 	
 	// get the number of bytes published.
 	uint32_t getNumBytesStored();
@@ -70,15 +76,19 @@ public:
 	int16_t consumeInt16();
 	int32_t consumeInt32();
 	int64_t consumeInt64();
+	double consumeDouble();
 	
-	uint16_t consumeLittleEndianUInt16();
-	uint32_t consumeLittleEndianUInt32();
-	uint64_t consumeLittleEndianUInt64();
-	
+	// when you want to convert from BE -> LE
+	uint16_t consumeBigEndianUInt16();
+	uint32_t consumeBigEndianUInt32();
+	uint64_t consumeBigEndianUInt64();
+	double consumeBigEndianDouble();	
 	
 	// helpers
 	inline uint8_t getAt(uint8_t position);
 	void printHex(uint32_t start = 0, uint32_t end = 0);
+	void printDoubleAsHex(double toPrint);
+	void printUInt16AsHex(uint16 toPrint);
 	void recycle();
 	bool ensureSize(uint32_t expectedSize);
 	void cleanup();

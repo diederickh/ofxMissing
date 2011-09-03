@@ -422,7 +422,7 @@ Dictionary& Dictionary::toUint64() {
 
 // Retrieve as forced type
 //------------------------------------------------------------------------------
-uint8_t Dictionary::asUInt8() {
+uint8_t Dictionary::getAsUInt8() {
 	uint8_t val;
 	string as_str =(string)(*this);
 	istringstream is(as_str);
@@ -430,7 +430,7 @@ uint8_t Dictionary::asUInt8() {
 	return val;
 }
 
-uint16_t Dictionary::asUInt16() {
+uint16_t Dictionary::getAsUInt16() {
 	uint16_t val;
 	string as_str =(string)(*this);
 	istringstream is(as_str);
@@ -438,7 +438,7 @@ uint16_t Dictionary::asUInt16() {
 	return val;
 }
 
-uint32_t Dictionary::asUInt32() {
+uint32_t Dictionary::getAsUInt32() {
 	uint32_t val;
 	string as_str =(string)(*this);
 	istringstream is(as_str);
@@ -446,7 +446,7 @@ uint32_t Dictionary::asUInt32() {
 	return val;
 }
 
-uint64_t Dictionary::asUint64() {
+uint64_t Dictionary::getAsUint64() {
 	uint64_t val;
 	string as_str =(string)(*this);
 	istringstream is(as_str);
@@ -454,7 +454,7 @@ uint64_t Dictionary::asUint64() {
 	return val;
 }
 
-int8_t Dictionary::asInt8() {
+int8_t Dictionary::getAsInt8() {
 	int8_t val;
 	string as_str =(string)(*this);
 	istringstream is(as_str);
@@ -462,7 +462,7 @@ int8_t Dictionary::asInt8() {
 	return val;
 }
 
-int16_t Dictionary::asInt16() {
+int16_t Dictionary::getAsInt16() {
 	int16_t val;
 	string as_str =(string)(*this);
 	istringstream is(as_str);
@@ -470,7 +470,7 @@ int16_t Dictionary::asInt16() {
 	return val;
 }
 
-int32_t  Dictionary::asInt32() {
+int32_t  Dictionary::getAsInt32() {
 	int32_t val;
 	string as_str =(string)(*this);
 	istringstream is(as_str);
@@ -478,7 +478,7 @@ int32_t  Dictionary::asInt32() {
 	return val;
 }
 
-int64_t  Dictionary::asInt64() {
+int64_t  Dictionary::getAsInt64() {
 	int64_t val;
 	string as_str =(string)(*this);
 	istringstream is(as_str);

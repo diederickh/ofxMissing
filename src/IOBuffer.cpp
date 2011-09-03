@@ -1,7 +1,10 @@
 #include "IOBuffer.h"
 #include "Endianness.h"
-
 #include "ofMain.h" // for debuggin
+
+// tmp for debugging
+
+
 IOBuffer::IOBuffer() 
 :buffer(NULL)
 ,size(0)
@@ -13,6 +16,29 @@ IOBuffer::IOBuffer()
 
 IOBuffer::~IOBuffer() {
 	cleanup();
+}
+
+
+bool IOBuffer::loadFile(string path) {
+	ifstream ifs(path.c_str(), ios::in|ios::binary|ios::ate);
+	if(!ifs.is_open()) {
+		printf("IOBuffer error: cannot read file\n");
+		return false;
+	}
+	// get size and go back to start.
+	uint32_t file_size = ifs.tellg();
+ 	ifs.seekg(0, ios::beg);
+	
+	// read bytes into buffer.
+ 	char* tmp_buffer = new char [file_size];
+	ifs.read (tmp_buffer, file_size);
+ 	ifs.close();
+	
+	// and copy the buffer.
+	storeBytes(tmp_buffer, file_size);
+	delete[] tmp_buffer;
+
+	return true;
 }
 
 void IOBuffer::setup() {
@@ -153,19 +179,50 @@ void IOBuffer::storeUInt32(uint32_t data) {
 
 void IOBuffer::storeBigEndianUInt16(uint16_t data) {
 	ensureSize(16);
-	data = htonsex(data);
+	data = ToBE16(data);
 	memcpy(buffer+published, &data, 2);
 	published += 2;
 }
 
 void IOBuffer::storeBigEndianUInt32(uint32_t data) {
 	ensureSize(4);
-	data = htonlex(data);
+	data = ToBE32(data);
 	memcpy(buffer+published, &data, 4);
 	published += 4;
 }
 
-void IOBuffer::storeString(string& data) {
+void IOBuffer::storeBigEndianUInt64(uint64_t data) {
+	ensureSize(8);
+	cout << "STORE (1):" << data << endl;
+	data = ToBE64(data);
+	cout << "STORE (2):" << data << endl;
+	memcpy(buffer+published, &data, 8);
+	published += 8;
+}
+
+void IOBuffer::storeBigEndianDouble(double data) {
+	cout << "store double, hex:" << endl;
+	printDoubleAsHex(data);
+	uint64_t val = 0;
+	memcpy(&val, &data, 8);
+	val = ToBE64(val);
+	memcpy(buffer+published, &val, 8);
+	published += 8;
+	/*
+	uint64_t val = 0;
+	memcpy(&val, buffer+consumed, 8);
+	val = FromBE64(val);
+
+	double d = 0.0;
+	memcpy(&d, &val, 8);
+
+	consumed += 8;
+	return d;
+	*/
+}
+
+
+void IOBuffer::storeString(string data) {
 	uint32_t len = (uint32_t)data.length();
 	ensureSize(len);
 	memcpy(buffer+published, (uint8_t *)data.c_str(), len);
@@ -178,8 +235,16 @@ void IOBuffer::storeBuffer(IOBuffer& other) {
 }
 
 void IOBuffer::storeBuffer(IOBuffer& other, uint32_t numBytes) {
+	/*
+	cout << "Store from other buffer. Bytes:" << numBytes << endl;
+	cout << "this.published: " << published << endl;
+	cout << "this.consumed: " << consumed << endl;
+	cout << "other.published: " << other.published << endl;
+	cout << "other.consumed: " << other.consumed << endl;
+	*/
+	
 	ensureSize(numBytes);
-	memcpy(buffer+published, other.buffer, numBytes);
+	memcpy(buffer+published, other.buffer+other.consumed, numBytes);
 	published += numBytes;
 }
 
@@ -275,36 +340,52 @@ int64_t IOBuffer::consumeInt64() {
 	return val;
 }
 
-// when you assume the data is big endian, convert it to little endian.
+double IOBuffer::consumeDouble() {
+	double val = 0;
+	memcpy(&val, buffer+consumed, 8);
+	consumed += 8;
+	return val;
+}
+
+// when you assume the data is big endian, convert it to system 
 // -----------------------------------------------------------------------------
-uint16_t IOBuffer::consumeLittleEndianUInt16() {
+uint16_t IOBuffer::consumeBigEndianUInt16() {
 	uint16_t val = 0;
 	memcpy(&val, buffer+consumed, 2);
 	consumed += 2;
-	val = ntohsex(val);
+//	val = ntohsex(val);
+	val = FromBE16(val);
 	return val;
 }
 
-uint32_t IOBuffer::consumeLittleEndianUInt32() {
+uint32_t IOBuffer::consumeBigEndianUInt32() {
 	uint32_t val = 0;
 	memcpy(&val, buffer+consumed, 4);
 	consumed += 4;
-	val = ntohlex(val);
+//	val = ntohlex(val);
+	val = FromBE32(val);
 	return val;
 }
 
-uint64_t IOBuffer::consumeLittleEndianUInt64() {
+uint64_t IOBuffer::consumeBigEndianUInt64() {
 	uint64_t val = 0;
-	printf("@todo IOBuffer, no handle for little endian 64 yet\n");
-	/*
 	memcpy(&val, buffer+consumed, 8);
+	val = FromBE64(val);
 	consumed += 8;
-	val = ntohsex(val);
-	*/
 	return val;
 }
 
+double IOBuffer::consumeBigEndianDouble() {
+	uint64_t val = 0;
+	memcpy(&val, buffer+consumed, 8);
+	val = FromBE64(val);
 
+	double d = 0.0;
+	memcpy(&d, &val, 8);
+
+	consumed += 8;
+	return d;
+}
 
 
 // Searching for bytes in buffer and returning strings
@@ -383,3 +464,17 @@ void IOBuffer::printHex(uint32_t start, uint32_t end) {
 	printf("\n");
 }
 
+void IOBuffer::printDoubleAsHex(double d) {
+	uint8_t tmp_buf[8];
+	memcpy(tmp_buf,&d,8);
+	for(int i = 0; i < 8; ++i) {
+		printf("%02X ", tmp_buf[i]);
+	}
+	printf("\n");
+}
+
+void IOBuffer::printUInt16AsHex(uint16 toPrint) {
+	uint8_t tmp_buf[2];
+	memcpy(tmp_buf, &toPrint, 2);
+	printf("%02X %02X\n", tmp_buf[0], tmp_buf[1]);
+}

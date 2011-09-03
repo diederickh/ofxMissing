@@ -14,6 +14,7 @@ bool fileExists(string path, bool relativeToDataDir = true);
 std::set<string> getFiles(string filePathWithGlob, bool relativeToDataDir = true);
 string md5(string input);
 
+
 #ifdef __cplusplus
 	}
 #endif

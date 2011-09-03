@@ -75,15 +75,15 @@ public:
 	Dictionary& operator[](const uint32_t& key);
 	
 	// retrieve as a forced type
-	uint8_t  asUInt8();
-	uint16_t asUInt16();
-	uint32_t asUInt32();
-	uint64_t asUint64();
+	uint8_t  getAsUInt8();
+	uint16_t getAsUInt16();
+	uint32_t getAsUInt32();
+	uint64_t getAsUint64();
 	
-	int8_t 	 asInt8();
-	int16_t  asInt16();
-	int32_t  asInt32();
-	int64_t  asInt64();
+	int8_t 	 getAsInt8();
+	int16_t  getAsInt16();
+	int32_t  getAsInt32();
+	int64_t  getAsInt64();
 	
 	// Change internal type
 	Dictionary& toInt8();
