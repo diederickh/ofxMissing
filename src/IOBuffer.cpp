@@ -363,8 +363,7 @@ string IOBuffer::consumeString(uint32_t upToNumBytes) {
 // helpers
 //------------------------------------------------------------------------------
 void IOBuffer::printHex(uint32_t start, uint32_t end) {
-	if(start == 0 && end == 0) {
-		start = consumed;
+	if(end == 0) {
 		end = published;
 	}
 	if(end > published) {
@@ -375,10 +374,11 @@ void IOBuffer::printHex(uint32_t start, uint32_t end) {
 	}
 	int c = 0;
 	for(int i = start,c=0; i < end; ++i,++c) {
-		printf("%02X ", buffer[i]);
-		if(c > 0 && c % 20 == 0) {
+		if(c > 20) {
 			printf("\n");
+			c = 0;
 		}
+		printf("%02X ", buffer[i]);
 	}
 	printf("\n");
 }
