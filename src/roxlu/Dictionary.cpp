@@ -4,7 +4,7 @@
 
 namespace roxlu {
 
-int Dictionary::num_maps = 0;
+//int Dictionary::num_maps = 0;
 
 
 // Constructors
@@ -13,6 +13,7 @@ Dictionary::Dictionary() {
 	type = D_NULL;
 	memset(&value, 0, sizeof(value));
 }
+
 
 Dictionary::~Dictionary() {
 	reset();
@@ -103,8 +104,8 @@ void Dictionary::reset() {
 			break;
 		}
 		case D_MAP: {
-			num_maps--;
-			cout << "Removed map: " << num_maps << endl;
+			//num_maps--;
+			//cout << "Removed map: " << num_maps << endl;
 			delete value.m; 
 			break;
 		}
@@ -112,7 +113,7 @@ void Dictionary::reset() {
 			break;
 		}
 		default: {
-			printf("@todo reset, check if all allocated types are supported!\n");
+			//printf("@todo reset, check if all allocated types are supported!\n");
 			break;
 		}
 	};
@@ -281,7 +282,7 @@ Dictionary& Dictionary::operator[](const string& key) {
 	}
 	if(type == D_NULL) {
 		type = D_MAP;
-		num_maps++; // tmp
+		//num_maps++; // tmp
 		value.m = new DictionaryMap;
 	}
 	
@@ -762,8 +763,8 @@ void Dictionary::isArray(bool makeArray) {
 		
 		type = D_MAP;
 		value.m = new DictionaryMap;
-		num_maps++;
-		cout << "Map created (2):" << num_maps << " we are:" << this<< endl;
+		//num_maps++;
+		//cout << "Map created (2):" << num_maps << " we are:" << this<< endl;
 	}
 	if(type == D_MAP) {
 		value.m->is_array = makeArray;

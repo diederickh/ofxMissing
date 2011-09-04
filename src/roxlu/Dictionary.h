@@ -40,7 +40,7 @@ namespace roxlu {
 
 	class Dictionary {
 	public:
-		static int num_maps; // tmp debug
+		//static int num_maps; // tmp debug
 		
 		// constructors.
 		Dictionary();
