@@ -12,7 +12,7 @@ Use this include path:
 ../../../addons/ofxMissing/src
 
 (or as how I store them)
-../../../../addons_diederick/ofxMissing/rc/
+../../../../addons_diederick/ofxMissing/src/
 
 Usage
 ==================
