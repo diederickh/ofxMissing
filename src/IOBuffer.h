@@ -88,7 +88,7 @@ public:
 	inline uint8_t getAt(uint8_t position);
 	void printHex(uint32_t start = 0, uint32_t end = 0);
 	void printDoubleAsHex(double toPrint);
-	void printUInt16AsHex(uint16 toPrint);
+	void printUInt16AsHex(uint16_t toPrint);
 	void recycle();
 	bool ensureSize(uint32_t expectedSize);
 	void cleanup();

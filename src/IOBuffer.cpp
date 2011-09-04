@@ -122,7 +122,7 @@ void IOBuffer::cleanup() {
 }
 
 void IOBuffer::setMinChunkSize(uint32_t minSize) {
-	assert(minSize > 0 && minSize < 16 * 1024 * 1024);
+	//assert(minSize > 0 && minSize < 16 * 1024 * 1024);
 	min_chunk_size = minSize;
 }
 
@@ -459,7 +459,7 @@ void IOBuffer::printDoubleAsHex(double d) {
 	printf("\n");
 }
 
-void IOBuffer::printUInt16AsHex(uint16 toPrint) {
+void IOBuffer::printUInt16AsHex(uint16_t toPrint) {
 	uint8_t tmp_buf[2];
 	memcpy(tmp_buf, &toPrint, 2);
 	printf("%02X %02X\n", tmp_buf[0], tmp_buf[1]);
