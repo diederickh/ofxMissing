@@ -1,10 +1,13 @@
 #include "DictionaryMap.h"
 #include "Dictionary.h"
-
+#include "ofMain.h"
 namespace roxlu {
 
 DictionaryMap::DictionaryMap() {
 	is_array = false;
+}
+
+DictionaryMap::~DictionaryMap() {
 }
 
 DictionaryMap::DictionaryMap(DictionaryMap& other) {

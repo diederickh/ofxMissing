@@ -14,7 +14,7 @@ class Dictionary;
 struct DictionaryMap {
 	DictionaryMap(DictionaryMap& other);
 	DictionaryMap(); 
-	
+	~DictionaryMap();
 	string type_name;
 	map<string, Dictionary> children;
 	bool is_array;

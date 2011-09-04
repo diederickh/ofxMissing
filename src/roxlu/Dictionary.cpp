@@ -4,6 +4,9 @@
 
 namespace roxlu {
 
+int Dictionary::num_maps = 0;
+
+
 // Constructors
 //------------------------------------------------------------------------------
 Dictionary::Dictionary() {
@@ -11,6 +14,9 @@ Dictionary::Dictionary() {
 	memset(&value, 0, sizeof(value));
 }
 
+Dictionary::~Dictionary() {
+	reset();
+}
 
 Dictionary::Dictionary(const Dictionary& val) {
 	copyFrom(val);
@@ -97,6 +103,8 @@ void Dictionary::reset() {
 			break;
 		}
 		case D_MAP: {
+			num_maps--;
+			cout << "Removed map: " << num_maps << endl;
 			delete value.m; 
 			break;
 		}
@@ -108,6 +116,7 @@ void Dictionary::reset() {
 			break;
 		}
 	};
+	
 	type = D_NULL;
 	memset(&value, 0, sizeof(value));
 }
@@ -123,6 +132,7 @@ Dictionary& Dictionary::operator=(const Dictionary& other) {
 
 // we define this inlined function (so external usage will give unresolved)
 void Dictionary::copyFrom(const Dictionary& other) {
+	
 	type = other.type;
 	memset(&value, 0, sizeof(value));
 	switch(other.type) {
@@ -266,8 +276,12 @@ Dictionary& Dictionary::operator[](const uint32_t& key) {
 }
 
 Dictionary& Dictionary::operator[](const string& key) {
+	if(	(type != D_MAP) && (type != D_NULL) && (type != D_UNDEFINED)) {
+		cout << "operator[]: Key index Applied to incorrect dictionary" << endl;
+	}
 	if(type == D_NULL) {
 		type = D_MAP;
+		num_maps++; // tmp
 		value.m = new DictionaryMap;
 	}
 	
@@ -421,6 +435,7 @@ Dictionary::operator string() {
 
 // Change internal type
 //------------------------------------------------------------------------------
+/*
 Dictionary& Dictionary::toInt8() {
 	type = D_INT8;
 	return *this;
@@ -461,6 +476,7 @@ Dictionary& Dictionary::toUint64() {
 	type = D_UINT64;
 	return *this;
 }
+*/
 
 // Retrieve as forced type
 //------------------------------------------------------------------------------
@@ -514,7 +530,7 @@ int16_t Dictionary::getAsInt16() {
 
 int32_t  Dictionary::getAsInt32() {
 	int32_t val;
-	string as_str =(string)(*this);
+	string as_str = (string)(*this);
 	istringstream is(as_str);
 	is >> val;
 	return val;
@@ -743,8 +759,11 @@ bool Dictionary::isArray() {
 
 void Dictionary::isArray(bool makeArray) {
 	if(type == D_NULL) {
+		
 		type = D_MAP;
 		value.m = new DictionaryMap;
+		num_maps++;
+		cout << "Map created (2):" << num_maps << " we are:" << this<< endl;
 	}
 	if(type == D_MAP) {
 		value.m->is_array = makeArray;

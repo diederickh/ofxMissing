@@ -40,8 +40,11 @@ namespace roxlu {
 
 	class Dictionary {
 	public:
+		static int num_maps; // tmp debug
+		
 		// constructors.
 		Dictionary();
+		~Dictionary();
 		Dictionary(const Dictionary& val);
 		Dictionary(const bool& val);
 		Dictionary(const double &val);
@@ -95,6 +98,7 @@ namespace roxlu {
 		int64_t  getAsInt64();
 		
 		// Change internal type
+		/*
 		Dictionary& toInt8();
 		Dictionary& toInt16();
 		Dictionary& toInt32();
@@ -103,6 +107,7 @@ namespace roxlu {
 		Dictionary& toUInt16();
 		Dictionary& toUInt32();
 		Dictionary& toUint64();
+		*/
 		
 		// type casting
 		operator bool();
