@@ -130,7 +130,7 @@ namespace roxlu {
 		void replaceString(string& target, string search, string replacement);
 		
 		// destructor related
-		void reset();
+		void reset(bool isUndefined = false);
 		
 		// array related
 		bool isArray();
@@ -139,6 +139,7 @@ namespace roxlu {
 		uint32_t getMapDenseSize();
 		void pushToArray(Dictionary dict);
 
+		bool hasKey(const string key);
 		void removeKey(const string& key);
 		void removeAt(const uint32_t index);
 

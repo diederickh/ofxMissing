@@ -97,7 +97,7 @@ Dictionary::Dictionary(const char* val) {
 
 // Destructor
 //------------------------------------------------------------------------------
-void Dictionary::reset() {
+void Dictionary::reset(bool isUndefined) {
 	switch(type) {
 		case D_STRING: {
 			delete value.s;
@@ -117,8 +117,13 @@ void Dictionary::reset() {
 			break;
 		}
 	};
-	
-	type = D_NULL;
+	if(isUndefined) {
+		type = D_UNDEFINED;
+	}
+	else {
+		type = D_NULL;
+	}
+		
 	memset(&value, 0, sizeof(value));
 }
 
@@ -280,7 +285,7 @@ Dictionary& Dictionary::operator[](const string& key) {
 	if(	(type != D_MAP) && (type != D_NULL) && (type != D_UNDEFINED)) {
 		cout << "operator[]: Key index Applied to incorrect dictionary" << endl;
 	}
-	if(type == D_NULL) {
+	if(type == D_NULL || type == D_UNDEFINED) {
 		type = D_MAP;
 		//num_maps++; // tmp
 		value.m = new DictionaryMap;
@@ -304,6 +309,7 @@ Dictionary& Dictionary::operator[](const char* key) {
 #define DICT_OPERATOR(ctype) \
 	Dictionary::operator ctype() { \
 		switch(type) { \
+			case D_UNDEFINED: \
 			case D_NULL: { \
 				return 0; \
 			} \
@@ -346,7 +352,7 @@ Dictionary& Dictionary::operator[](const char* key) {
 		} \
 	}  
 			
-DICT_OPERATOR(bool);	
+//DICT_OPERATOR(bool);	
 DICT_OPERATOR(double);		
 DICT_OPERATOR(int8_t);	
 DICT_OPERATOR(int16_t);			
@@ -357,6 +363,46 @@ DICT_OPERATOR(uint16_t);
 DICT_OPERATOR(uint32_t);	
 DICT_OPERATOR(uint64_t);	
 
+Dictionary::operator bool() {
+	switch(type) {
+		case D_NULL:
+		case D_UNDEFINED: {
+			return false;
+		}
+		
+		case D_BOOL: {
+			return value.b;
+		}
+		
+		case D_INT8:
+		case D_INT16:
+		case D_INT32:
+		case D_INT64:
+		case D_UINT8:
+		case D_UINT16:
+		case D_UINT32:
+		case D_UINT64:
+		case D_DOUBLE: {
+			bool result = false;
+			result |= (value.i8 != 0);
+			result |= (value.i16 != 0);
+			result |= (value.i32 != 0);
+			result |= (value.i64 != 0);
+			result |= (value.ui8 != 0);
+			result |= (value.ui16 != 0);
+			result |= (value.ui32 != 0);
+			result |= (value.ui64 != 0);
+			result |= (value.d != 0); //!not in variant!
+			return result;
+		}
+		
+		case D_STRING:
+		case D_MAP:
+		default: {
+			return false;
+		}
+	};
+}
 
 Dictionary::operator string() {
 	switch(type) {
@@ -772,7 +818,7 @@ void Dictionary::isArray(bool makeArray) {
 }
 
 uint32_t Dictionary::getMapSize() {
-	if(type == D_NULL) {
+	if(type == D_NULL || type == D_UNDEFINED) {
 		return 0;
 	}
 	if(type != D_MAP) {
@@ -787,7 +833,7 @@ uint32_t Dictionary::getMapSize() {
 // are indexed by a uint32_t. Internally these are stored using a 
 // special marker key. See the  "VAR_INDEX_VALUE" define. 
 uint32_t Dictionary::getMapDenseSize() {
-	if(type == D_NULL) {
+	if(type == D_NULL || type == D_UNDEFINED) {
 		return 0;
 	}
 	if(type != D_MAP) {
@@ -832,6 +878,13 @@ void Dictionary::removeAt(const uint32_t index) {
 	stringstream ss;
 	ss << VAR_INDEX_VALUE << index;
 	value.m->children.erase(ss.str());
+}
+
+bool Dictionary::hasKey(const string key) {
+	if(type != D_MAP) {
+		return false;
+	}
+	return IN_MAP(value.m->children, key);
 }
 
 // Iterate over values.
