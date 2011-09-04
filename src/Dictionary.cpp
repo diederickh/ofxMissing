@@ -2,6 +2,8 @@
 #include "DictionaryMap.h"
 #include "ofMain.h" // only for debugging
 
+namespace roxlu {
+
 // Constructors
 //------------------------------------------------------------------------------
 Dictionary::Dictionary() {
@@ -831,3 +833,4 @@ map<string, Dictionary>::iterator Dictionary::end() {
 }
 
 	
+} // namespace roxlu

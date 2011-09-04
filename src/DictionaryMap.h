@@ -8,6 +8,8 @@ using std::map;
 using std::string;
 
 
+namespace roxlu {
+
 class Dictionary;
 struct DictionaryMap {
 	DictionaryMap(DictionaryMap& other);
@@ -18,5 +20,7 @@ struct DictionaryMap {
 	bool is_array;
 	
 };
+
+} // namespace roxlu
 
 #endif
