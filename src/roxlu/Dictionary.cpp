@@ -732,12 +732,12 @@ string Dictionary::toString(string name, uint32_t indent) {
 		}
 		case D_MAP: {
 			map<string, Dictionary>::iterator it = value.m->children.begin();
-			result += "<MAP name=\"" +name +"\" is_array=\"" +((value.m->is_array) ? "true":"false") +"\">\n";
+			result += str_indent +"<MAP name=\"" +name +"\" is_array=\"" +((value.m->is_array) ? "true":"false") +"\">\n";
 			while(it != value.m->children.end()) {
 				result += it->second.toString((string)it->first, indent+1) +"\n";
 				++it;
 			}
-			result += "</MAP>";
+			result += str_indent +"</MAP>";
 			break;
 		}
 		default: {
