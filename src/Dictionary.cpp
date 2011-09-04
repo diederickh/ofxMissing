@@ -157,7 +157,6 @@ Dictionary& Dictionary::operator=(const double &val) {
 Dictionary& Dictionary::operator=(const string &val) {
 	reset();
 	type = D_STRING;
-	//printf("$ store string: %s", val.c_str());
 	value.s = new string(val);
 	return *this;
 }
@@ -228,7 +227,6 @@ Dictionary& Dictionary::operator=(const uint64_t &val) {
 
 // @todo pass by ref?
 bool Dictionary::operator==(Dictionary other) {
-	cout << toString() << " == " << other.toString() << endl;
 	return toString() == other.toString();
 }
 

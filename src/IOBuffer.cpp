@@ -193,32 +193,18 @@ void IOBuffer::storeBigEndianUInt32(uint32_t data) {
 
 void IOBuffer::storeBigEndianUInt64(uint64_t data) {
 	ensureSize(8);
-	cout << "STORE (1):" << data << endl;
 	data = ToBE64(data);
-	cout << "STORE (2):" << data << endl;
 	memcpy(buffer+published, &data, 8);
 	published += 8;
 }
 
 void IOBuffer::storeBigEndianDouble(double data) {
-	cout << "store double, hex:" << endl;
-	printDoubleAsHex(data);
+	ensureSize(8);
 	uint64_t val = 0;
 	memcpy(&val, &data, 8);
 	val = ToBE64(val);
 	memcpy(buffer+published, &val, 8);
 	published += 8;
-	/*
-	uint64_t val = 0;
-	memcpy(&val, buffer+consumed, 8);
-	val = FromBE64(val);
-
-	double d = 0.0;
-	memcpy(&d, &val, 8);
-
-	consumed += 8;
-	return d;
-	*/
 }
 
 
