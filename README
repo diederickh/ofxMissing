@@ -1,3 +1,26 @@
 ofxMissing
 ==========
-Some utils I whish were part of OF ;-)
+Some utils often used in project we do at Apollo Media.
+
+
+Install
+==================
+Include "ofxMissing.h" into your project and you can use all features from 
+the "roxlu" directory.
+
+Use this include path:
+../../../addons/ofxMissing/src
+
+(or as how I store them)
+../../../../addons_diederick/ofxMissing/rc/
+
+Usage
+==================
+Include "ofxMissing.h" into your project and you can use all features from 
+the "roxlu" directory. We have support for:
+
+- INI file reading/writing
+- RAW IO buffers (for networking, storage)
+- Date functions
+- MD5
+
