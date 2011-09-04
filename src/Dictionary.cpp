@@ -1,5 +1,6 @@
 #include "Dictionary.h"
 #include "DictionaryMap.h"
+#include "ofMain.h" // only for debugging
 
 // Constructors
 //------------------------------------------------------------------------------
@@ -79,6 +80,12 @@ Dictionary::Dictionary(const string &val) {
 	value.s = new string(val);
 }
 
+Dictionary::Dictionary(const char* val) {
+	type = D_STRING;
+	memset(&value, 0, sizeof(value));
+	value.s = new string(val);
+}
+
 // Destructor
 //------------------------------------------------------------------------------
 void Dictionary::reset() {
@@ -88,7 +95,6 @@ void Dictionary::reset() {
 			break;
 		}
 		case D_MAP: {
-			printf("reset map.\n");
 			delete value.m; 
 			break;
 		}
@@ -219,6 +225,39 @@ Dictionary& Dictionary::operator=(const uint64_t &val) {
 	value.ui64 = val;
 	return *this;
 }
+
+// @todo pass by ref?
+bool Dictionary::operator==(Dictionary other) {
+	cout << toString() << " == " << other.toString() << endl;
+	return toString() == other.toString();
+}
+
+bool Dictionary::operator!=(Dictionary other) {
+	return !operator==(other);
+}
+
+bool Dictionary::operator==(DictionaryType checkType) {
+	if(checkType == D_NUMERIC) {
+		return type == D_INT8 
+				|| type == D_INT16
+				|| type == D_INT32
+				|| type == D_INT64
+				|| type == D_UINT8
+				|| type == D_UINT32
+				|| type == D_UINT64
+				|| type == D_DOUBLE;
+				
+	}	
+	else  {
+		return type == checkType;
+	}
+}
+
+bool Dictionary::operator!=(DictionaryType checkType) {
+	return !operator==(checkType);
+}
+
+
 
 Dictionary& Dictionary::operator[](const uint32_t& key) {
 	stringstream ss;
@@ -367,9 +406,12 @@ Dictionary::operator string() {
 		case D_STRING: {
 			return *value.s;
 		}
+		
+		case D_UNDEFINED:
+		case D_NULL:
 		case D_MAP: 
 		default: {
-			printf("Cannot cast to string");
+			//printf("Cannot cast to string, type: %d", type);
 			return "";
 		}
 	};
@@ -593,6 +635,101 @@ void Dictionary::replaceString(string& target, string search, string replacement
 		target.replace(i, search.length(), replacement);
 		last_pos = i + replacement.length();
 	}
+}
+
+string Dictionary::toString(string name, uint32_t indent) {
+	string result = "";
+	string str_indent = string(indent*4, ' ');
+	switch(type) {
+		case D_NULL: {
+			result += str_indent +"<NULL name=\"" +name +"\"></NULL>";
+			break;
+		}
+		case D_UNDEFINED: {
+			result += str_indent +"<UNDEFINED name=\"" +name +"\"></UNDEFINED>";
+			break;
+		}
+		case D_BOOL: {
+			result += str_indent +"<BOOL name=\"" +name +"\">" 
+										+((value.b) ? "true":"false") 
+								+"</BOOL>";
+			break;
+		}
+		case D_INT8: {
+			stringstream ss;
+			ss << value.i8;
+			result += str_indent +"<INT8 name=\"" +name +"\">" +ss.str() +"</INT8>";
+			break;
+		}
+		case D_INT16: {
+			stringstream ss;
+			ss << value.i16;
+			result += str_indent +"<INT16 name=\"" +name +"\">" +ss.str() +"</INT16>";
+			break;
+		}
+		case D_INT32: {
+			stringstream ss;
+			ss << value.i32;
+			result += str_indent +"<INT32 name=\"" +name +"\">" +ss.str() +"</INT32>";
+			break;
+		}
+		case D_INT64: {
+			stringstream ss;
+			ss << value.i64;
+			result += str_indent +"<INT64 name=\"" +name +"\">" +ss.str() +"</INT64>";
+			break;
+		}
+		case D_UINT8: {
+			stringstream ss;
+			ss << value.ui8;
+			result += str_indent +"<UINT8 name=\"" +name +"\">" +ss.str() +"</UINT8>";
+			break;
+		}
+		case D_UINT16: {
+			stringstream ss;
+			ss << value.ui16;
+			result += str_indent +"<UINT16 name=\"" +name +"\">" +ss.str() +"</UINT16>";
+			break;
+		}
+		case D_UINT32: {
+			stringstream ss;
+			ss << value.ui32;
+			result += str_indent +"<UINT32 name=\"" +name +"\">" +ss.str() +"</UINT32>";
+			break;
+		}
+		case D_UINT64: {
+			stringstream ss;
+			ss << value.ui64;
+			result += str_indent +"<UINT64 name=\"" +name +"\">" +ss.str() +"</UINT64>";
+			break;
+		}
+		case D_DOUBLE: {
+			stringstream ss;
+			ss << value.d;
+			result += str_indent +"<DOUBLE name=\"" +name +"\">" +ss.str() +"</DOUBLE>";
+			break;
+		}
+		case D_STRING: {
+			result += str_indent +"<STR name=\"" +name +"\">" +(*value.s) +"</STR>";
+			break;
+		}
+		case D_MAP: {
+			map<string, Dictionary>::iterator it = value.m->children.begin();
+			result += "<MAP name=\"" +name +"\" is_array=\"" +((value.m->is_array) ? "true":"false") +"\">\n";
+			while(it != value.m->children.end()) {
+				result += it->second.toString((string)it->first, indent+1) +"\n";
+				++it;
+			}
+			result += "</MAP>";
+			break;
+		}
+		default: {
+			printf("dictionary: cannot convert unhandled type toString()\n");
+			break;
+		}
+		
+	}
+	return result;
 }
 
 // Array related 

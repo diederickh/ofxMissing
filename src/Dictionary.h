@@ -15,22 +15,24 @@
 using namespace std;
 
 enum DictionaryType {
-	 D_NULL		=	0
-	,D_BOOL		= 	1
+	 D_NULL			=	0
+	,D_UNDEFINED 	=	1
+	,D_BOOL			= 	2
 	
-	,D_INT8		=	2
-	,D_INT16	=	3
-	,D_INT32	=	4
-	,D_INT64	=	5
+	,D_INT8			=	3
+	,D_INT16		=	4
+	,D_INT32		=	5
+	,D_INT64		=	6
+
+	,D_UINT8		=	7
+	,D_UINT16		=	8
+	,D_UINT32		=	9
+	,D_UINT64		=	10
+	,D_NUMERIC		=	11
 	
-	,D_UINT8	=	6
-	,D_UINT16	=	7
-	,D_UINT32	=	8
-	,D_UINT64	=	9
-	
-	,D_DOUBLE	= 	10
-	,D_STRING	=	11
-	,D_MAP		= 	12
+	,D_DOUBLE		= 	12
+	,D_STRING		=	13
+	,D_MAP			= 	14
 };
 
 struct DictionaryMap;
@@ -43,6 +45,7 @@ public:
 	Dictionary(const bool& val);
 	Dictionary(const double &val);
 	Dictionary(const string &val);
+	Dictionary(const char* val);
 	
 	Dictionary(const int8_t &val);
 	Dictionary(const int16_t &val);
@@ -73,6 +76,11 @@ public:
 	Dictionary& operator[](const string& key);
 	Dictionary& operator[](const char* key);
 	Dictionary& operator[](const uint32_t& key);
+	
+	bool operator==(Dictionary other); // @todo pass by ref?
+	bool operator!=(Dictionary other);
+	bool operator==(DictionaryType type);
+	bool operator!=(DictionaryType type);
 	
 	// retrieve as a forced type
 	uint8_t  getAsUInt8();
@@ -112,6 +120,7 @@ public:
 	void escapeJSON(string &value);
 	
 	// string functions
+	string toString(string name="", uint32_t indent = 0);
 	void replaceString(string& target, string search, string replacement);
 	
 	// destructor related
