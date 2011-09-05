@@ -4,6 +4,7 @@
 // -----------------------------------------------------------------------------
 INI::INI() {
 }
+
 INI::INI(string sFile) {
 	load(sFile);
 }
@@ -17,7 +18,6 @@ bool INI::load(string sFile) {
 	string line;
 	string section;
 	while(getline(ifs,line)) {
-		
 		// empty line.
 		if(line.size() == 0) {
 			INISortedEntry* se = new INISortedEntry("", INI_NEW_LINE);
@@ -51,7 +51,7 @@ bool INI::load(string sFile) {
 		if(key.at(0) == '[') {
 			section = "";
 			for(int i = 0; i < key.size(); ++i) {
-				if(key[i] != '[' && key[i] != ']')  {
+				if(key[i] != '[' && key[i] != ']' && key[i] != 0x0D && key[i] != 0x0A)  {
 					section.push_back(key[i]);
 				}
 			}
