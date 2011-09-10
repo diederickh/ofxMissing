@@ -16,16 +16,17 @@ using Poco::trimInPlace;
 using Poco::DigestOutputStream;
 using Poco::DigestEngine;
 using Poco::MD5Engine;
-
+/*
 void setFrameRateAsWindowTitle() {
 	ofSetWindowTitle(ofToString(ofGetFrameRate()));
 }
-
+*/
 void trim(string& str) {
 	trimInPlace(str);
 }
 
 // 60 FPS, vertical sync, dark background
+/*
 void setupOF(int fps) {
 	ofSetFrameRate(fps);
 	if(fps <= 60) {
@@ -34,12 +35,15 @@ void setupOF(int fps) {
 	ofBackground(33,33,33);
 }
 
+*/
+
 // create a directory if it doesnt exist yet.
 bool createDirectory(string dir, bool relativeToDataDir, bool createSubDirectories) {
 	try {
 		trim(dir);
 		if(relativeToDataDir) {
-			dir = ofToDataPath(dir,true);
+			//dir = ofToDataPath(dir,true);
+			printf("------------ ERROR IN OFXMISSING  UTILS.CPP - WE ARE REMOVING ALL OF DEPENDENCIES ---------------");
 		}
 		Poco::File f(dir);
 		try {
@@ -71,7 +75,8 @@ bool fileExists(string path, bool relativeToDataDir) {
 	bool ex = false;	
 	try {
 		if(relativeToDataDir) {
-			path = ofToDataPath(path,true);
+			//path = ofToDataPath(path,true);
+			printf("------------ ERROR IN OFXMISSING  UTILS.CPP - WE ARE REMOVING ALL OF DEPENDENCIES ---------------");
 		}
 		Poco::File f(path);
 		ex = f.exists();
@@ -89,7 +94,8 @@ bool fileExists(string path, bool relativeToDataDir) {
 // Get Files by a globber filePathWithGlob example: /data/dir/filename* 
 set<string> getFiles(string filePathWithGlob, bool relativeToDataDir) {
 	if(relativeToDataDir) {
-		filePathWithGlob = ofToDataPath(filePathWithGlob,true);
+	//	filePathWithGlob = ofToDataPath(filePathWithGlob,true);
+		printf("------------ ERROR IN OFXMISSING  UTILS.CPP - WE ARE REMOVING ALL OF DEPENDENCIES ---------------");
 	}
 	set<string> files;
 	try {

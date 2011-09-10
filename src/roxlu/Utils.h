@@ -1,7 +1,12 @@
 #pragma once
 
-#include "ofMain.h"
+//#include "ofMain.h"
 #include <set>
+#include <string>
+
+using std::string;
+using std::set;
+
 #ifdef __cplusplus
 	extern "C" {
 #endif

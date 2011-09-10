@@ -1,9 +1,6 @@
 #include "IOBuffer.h"
 #include "Endianness.h"
-#include "ofMain.h" // for debuggin
-
-// tmp for debugging
-
+//#include "ofMain.h"
 
 IOBuffer::IOBuffer() 
 :buffer(NULL)
@@ -20,14 +17,14 @@ IOBuffer::~IOBuffer() {
 
 
 bool IOBuffer::loadFile(string path) {
-	ifstream ifs(path.c_str(), ios::in|ios::binary|ios::ate);
+	ifstream ifs(path.c_str(), std::ios::in|std::ios::binary|std::ios::ate);
 	if(!ifs.is_open()) {
 		printf("IOBuffer error: cannot read file\n");
 		return false;
 	}
 	// get size and go back to start.
 	uint32_t file_size = ifs.tellg();
- 	ifs.seekg(0, ios::beg);
+ 	ifs.seekg(0, std::ios::beg);
 	
 	// read bytes into buffer.
  	char* tmp_buffer = new char [file_size];

@@ -1,6 +1,6 @@
 #include "Dictionary.h"
 #include "DictionaryMap.h"
-#include "ofMain.h" // only for debugging
+//#include "ofMain.h" // only for debugging
 
 namespace roxlu {
 
@@ -99,13 +99,12 @@ Dictionary::Dictionary(const char* val) {
 //------------------------------------------------------------------------------
 void Dictionary::reset(bool isUndefined) {
 	switch(type) {
+		case D_BYTEARRAY:
 		case D_STRING: {
 			delete value.s;
 			break;
 		}
 		case D_MAP: {
-			//num_maps--;
-			//cout << "Removed map: " << num_maps << endl;
 			delete value.m; 
 			break;
 		}
@@ -142,6 +141,7 @@ void Dictionary::copyFrom(const Dictionary& other) {
 	type = other.type;
 	memset(&value, 0, sizeof(value));
 	switch(other.type) {
+		case D_BYTEARRAY:
 		case D_STRING: {
 			value.s = new string(*other.value.s);
 			break;
@@ -464,6 +464,7 @@ Dictionary::operator string() {
 			return ss.str();
 		}
 		
+		case D_BYTEARRAY:
 		case D_STRING: {
 			return *value.s;
 		}
@@ -479,51 +480,6 @@ Dictionary::operator string() {
 	return "";
 }
 
-
-// Change internal type
-//------------------------------------------------------------------------------
-/*
-Dictionary& Dictionary::toInt8() {
-	type = D_INT8;
-	return *this;
-}
-
-Dictionary& Dictionary::toInt16() {
-	type = D_INT16;
-	return *this;
-}
-
-Dictionary& Dictionary::toInt32() {
-	type = D_INT32;
-	return *this;
-}
-
-Dictionary& Dictionary::toInt64() {
-	type = D_INT64;
-	return *this;
-}
-
-Dictionary& Dictionary::toUInt8() {
-	type = D_UINT8;
-	return *this;
-}
-
-Dictionary& Dictionary::toUInt16() {
-	type = D_UINT16;
-	return *this;
-}
-
-Dictionary& Dictionary::toUInt32() {
-	type = D_UINT32;
-	return *this;
-
-}
-
-Dictionary& Dictionary::toUint64() {
-	type = D_UINT64;
-	return *this;
-}
-*/
 
 // Retrieve as forced type
 //------------------------------------------------------------------------------
@@ -593,6 +549,18 @@ int64_t  Dictionary::getAsInt64() {
 
 // Serialization
 //------------------------------------------------------------------------------
+string Dictionary::toJSON() {
+	string result = "";
+	if(serializeToJSON(result)) {
+		return result;
+	}
+	return "";
+}
+
+string Dictionary::toXML() {
+	return toString();
+}
+
 bool Dictionary::serializeToJSON(string &result) {
 	switch(type) {
 		case D_NULL: {
@@ -631,7 +599,10 @@ bool Dictionary::serializeToJSON(string &result) {
 			result += str;
 			break;
 		}
-		
+		case D_BYTEARRAY: {
+			result += "\"bytearray not supported\"";
+			break;
+		}
 		case D_MAP: {
 			result += (isArray()) ? "[" : "{";
 
@@ -776,6 +747,12 @@ string Dictionary::toString(string name, uint32_t indent) {
 			result += str_indent +"<STR name=\"" +name +"\">" +(*value.s) +"</STR>";
 			break;
 		}
+		case D_BYTEARRAY: {
+			stringstream ss;
+			ss << (*value.s).size();
+			result += str_indent +"<BYTEARRAY name=\"" +name +"\">" +ss.str() +" bytes</BYTEARRAY>";
+			break;
+		}
 		case D_MAP: {
 			map<string, Dictionary>::iterator it = value.m->children.begin();
 			result += str_indent +"<MAP name=\"" +name +"\" is_array=\"" +((value.m->is_array) ? "true":"false") +"\">\n";
@@ -815,6 +792,23 @@ void Dictionary::isArray(bool makeArray) {
 	if(type == D_MAP) {
 		value.m->is_array = makeArray;
 	}
+}
+
+void Dictionary::isByteArray(bool makeByteArray) {	
+	if(makeByteArray) {
+		if(type == D_STRING) {
+			type = D_BYTEARRAY;
+		}
+	}
+	else {
+		if(type == D_BYTEARRAY) {
+			type = D_STRING;
+		}
+	}
+}
+
+bool Dictionary::isByteArray() {
+	return type == D_BYTEARRAY;
 }
 
 uint32_t Dictionary::getMapSize() {

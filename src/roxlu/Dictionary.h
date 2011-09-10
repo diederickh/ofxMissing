@@ -8,6 +8,7 @@
 #include <sstream>
 #include <map>
 #include <iomanip>
+#include <iostream>
 
 #define IN_MAP(m,k)	((bool)((m).find((k))!=(m).end()))
 #define VAR_INDEX_VALUE "__index__value__"
@@ -34,6 +35,7 @@ namespace roxlu {
 		,D_DOUBLE		= 	12
 		,D_STRING		=	13
 		,D_MAP			= 	14
+		,D_BYTEARRAY	=	15
 	};
 
 	struct DictionaryMap;
@@ -97,18 +99,6 @@ namespace roxlu {
 		int32_t  getAsInt32();
 		int64_t  getAsInt64();
 		
-		// Change internal type
-		/*
-		Dictionary& toInt8();
-		Dictionary& toInt16();
-		Dictionary& toInt32();
-		Dictionary& toInt64();
-		Dictionary& toUInt8();
-		Dictionary& toUInt16();
-		Dictionary& toUInt32();
-		Dictionary& toUint64();
-		*/
-		
 		// type casting
 		operator bool();
 		operator int8_t();
@@ -122,17 +112,19 @@ namespace roxlu {
 		operator double();
 		operator string();
 		
-		bool serializeToJSON(string &result);
-		void escapeJSON(string &value);
+		string toJSON();
+		string toXML();
 		
 		// string functions
-		string toString(string name="", uint32_t indent = 0);
+	
 		void replaceString(string& target, string search, string replacement);
 		
 		// destructor related
 		void reset(bool isUndefined = false);
 		
 		// array related
+		void isByteArray(bool makeByteArray);
+		bool isByteArray();
 		bool isArray();
 		void isArray(bool makeArray);
 		uint32_t getMapSize();
@@ -147,7 +139,10 @@ namespace roxlu {
 		map<string, Dictionary>::iterator begin();
 		map<string, Dictionary>::iterator end();
 	private:	
-		
+		bool serializeToJSON(string &result);
+		void escapeJSON(string &value);
+		string toString(string name="", uint32_t indent = 0);
+				
 		union {
 			bool 		b;
 			int8_t 		i8;
