@@ -1,6 +1,8 @@
 #include "IOBuffer.h"
 #include "Endianness.h"
-//#include "ofMain.h"
+#include <iostream>
+using std::cout;
+using std::endl;
 
 IOBuffer::IOBuffer() 
 :buffer(NULL)
@@ -16,7 +18,7 @@ IOBuffer::~IOBuffer() {
 }
 
 
-bool IOBuffer::loadFile(string path) {
+bool IOBuffer::loadFromFile(string path) {
 	ifstream ifs(path.c_str(), std::ios::in|std::ios::binary|std::ios::ate);
 	if(!ifs.is_open()) {
 		printf("IOBuffer error: cannot read file\n");
@@ -37,6 +39,24 @@ bool IOBuffer::loadFile(string path) {
 
 	return true;
 }
+
+// http://www.cplusplus.com/reference/iostream/ofstream/ofstream/
+bool IOBuffer::saveToFile(string path) {
+	ofstream ofs(path.c_str(), std::ios::out | std::ios::binary);
+	if(!ofs.is_open()) {
+		return false;
+	}
+	
+	//ofs.open(filename, ios::out | ios::binary);
+	ofs.write((char*)buffer, published);
+	if(!ofs.good()) {
+		ofs.close();
+		return false;
+	}
+	ofs.close();
+	return true;
+}
+
 
 void IOBuffer::setup() {
 	setup(min_chunk_size);	
@@ -460,4 +480,8 @@ void IOBuffer::printUInt16AsHex(uint16_t toPrint) {
 	uint8_t tmp_buf[2];
 	memcpy(tmp_buf, &toPrint, 2);
 	printf("%02X %02X\n", tmp_buf[0], tmp_buf[1]);
+}
+
+bool IOBuffer::hasBytesToRead() {
+	return consumed < published;
 }

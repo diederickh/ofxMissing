@@ -14,7 +14,6 @@ Dictionary::Dictionary() {
 	memset(&value, 0, sizeof(value));
 }
 
-
 Dictionary::~Dictionary() {
 	reset();
 }

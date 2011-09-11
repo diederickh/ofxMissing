@@ -8,6 +8,7 @@
 
 using std::string;
 using std::ifstream;
+using std::ofstream;
 
 // Based on CRTMP server source code.
 
@@ -26,13 +27,13 @@ public:
 public:
 	IOBuffer();
 	virtual ~IOBuffer();
-
 	
 	// setup
 	void setup();
 	void setup(uint32_t expectedSize);
 		
-	bool loadFile(string path);	
+	bool loadFromFile(string path);	
+	bool saveToFile(string path);
 		
 	// moving the read head
 	bool reuse(uint32_t numBytes); // opposite of ignore
@@ -57,7 +58,7 @@ public:
 	
 	// get the number of bytes published.
 	uint32_t getNumBytesStored();
-	
+	bool hasBytesToRead();
 					
 	// reading data back from buffer moving read head
 	int consumeUntil(uint8_t until, string& found);
