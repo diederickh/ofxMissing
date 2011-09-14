@@ -1,3 +1,4 @@
+
 #include "RecursiveFileList.h"
 RecursiveFileList::RecursiveFileList() 
 :max_dept(5)

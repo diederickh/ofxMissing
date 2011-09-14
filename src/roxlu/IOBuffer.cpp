@@ -232,6 +232,12 @@ void IOBuffer::storeString(string data) {
 	published += len;
 }
 
+// stores a uint16_t (big endian) + string
+void IOBuffer::storeStringWithSize(string data) {
+	storeBigEndianUInt16(data.size());
+	storeString(data);
+}
+
 // copy data from another buffer.
 void IOBuffer::storeBuffer(IOBuffer& other) {
 	storeBuffer(other, other.getNumBytesStored());	

@@ -51,6 +51,7 @@ public:
 	void storeBuffer(IOBuffer& other, uint32_t numBytes);
 
 	void storeString(string data);
+	void storeStringWithSize(string data); // adds a uint16_t with the size of the string 
 	void storeBigEndianUInt16(uint16_t data);
 	void storeBigEndianUInt32(uint32_t data);
 	void storeBigEndianUInt64(uint64_t data);
