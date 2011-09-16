@@ -7,6 +7,7 @@
 #include <Poco/Glob.h>
 #include <Poco/DigestStream.h>
 #include <Poco/MD5Engine.h>
+#include <iostream>
 
 using Poco::File;
 using Poco::Exception;
@@ -16,34 +17,22 @@ using Poco::trimInPlace;
 using Poco::DigestOutputStream;
 using Poco::DigestEngine;
 using Poco::MD5Engine;
-/*
-void setFrameRateAsWindowTitle() {
-	ofSetWindowTitle(ofToString(ofGetFrameRate()));
-}
-*/
+using Poco::toLowerInPlace;
+using Poco::toUpperInPlace;
+
+using std::cout;
+using std::endl;
+
 void trim(string& str) {
 	trimInPlace(str);
 }
-
-// 60 FPS, vertical sync, dark background
-/*
-void setupOF(int fps) {
-	ofSetFrameRate(fps);
-	if(fps <= 60) {
-		ofSetVerticalSync(true);
-	}
-	ofBackground(33,33,33);
-}
-
-*/
 
 // create a directory if it doesnt exist yet.
 bool createDirectory(string dir, bool relativeToDataDir, bool createSubDirectories) {
 	try {
 		trim(dir);
 		if(relativeToDataDir) {
-			//dir = ofToDataPath(dir,true);
-			printf("------------ ERROR IN OFXMISSING  UTILS.CPP - WE ARE REMOVING ALL OF DEPENDENCIES ---------------");
+			dir = getDataPath() +dir;
 		}
 		Poco::File f(dir);
 		try {
@@ -75,8 +64,7 @@ bool fileExists(string path, bool relativeToDataDir) {
 	bool ex = false;	
 	try {
 		if(relativeToDataDir) {
-			//path = ofToDataPath(path,true);
-			printf("------------ ERROR IN OFXMISSING  UTILS.CPP - WE ARE REMOVING ALL OF DEPENDENCIES ---------------");
+			path = getDataPath() +path;
 		}
 		Poco::File f(path);
 		ex = f.exists();
@@ -94,8 +82,7 @@ bool fileExists(string path, bool relativeToDataDir) {
 // Get Files by a globber filePathWithGlob example: /data/dir/filename* 
 set<string> getFiles(string filePathWithGlob, bool relativeToDataDir) {
 	if(relativeToDataDir) {
-	//	filePathWithGlob = ofToDataPath(filePathWithGlob,true);
-		printf("------------ ERROR IN OFXMISSING  UTILS.CPP - WE ARE REMOVING ALL OF DEPENDENCIES ---------------");
+		filePathWithGlob = getDataPath();
 	}
 	set<string> files;
 	try {
@@ -117,6 +104,31 @@ string md5(string input) {
 	const DigestEngine::Digest& digest = md5_engine.digest();
 	hash = DigestEngine::digestToHex(digest);
 	return hash;
+}
+
+
+string getDataPath() {
+	string cwd = getCurrentWorkingDirectory();
+	#if POCO_OS == POCO_OS_MAC_OS_X
+		cwd += "../../../data/";		
+	#else
+		#error "Implement data directory for Windows"
+	#endif
+	
+	return cwd;
+}
+
+string getCurrentWorkingDirectory() {
+	Poco::Path p;
+	return p.current();
+}
+
+void toLower(string& data) {
+	toLowerInPlace(data);
+}
+
+void toUpper(string& data) {
+	toUpperInPlace(data);
 }
 
 

@@ -37,8 +37,9 @@ public:
 		
 	// moving the read head
 	bool reuse(uint32_t numBytes); // opposite of ignore
-	bool ignore(uint32_t numBytes); 
-	
+	bool ignore(uint32_t numBytes);
+	void reset(); // resets consume and publish positions to start.
+		
 	// store data
 	bool storeBytes(const char* someData, const uint32_t numBytes);
 	bool storeBytes(const uint8_t* someData, const uint32_t numBytes);
@@ -58,7 +59,7 @@ public:
 	void storeBigEndianDouble(double data);
 	
 	// get the number of bytes published.
-	uint32_t getNumBytesStored();
+	uint32_t getNumBytesStored(); // use size()
 	bool hasBytesToRead();
 					
 	// reading data back from buffer moving read head
@@ -67,6 +68,7 @@ public:
 	void consumeBytes(uint8_t* buff, uint32_t numBytes);
 
 	string consumeString(uint32_t upToNumBytes);
+	string consumeStringWithSize();
 
 	uint8_t consumeByte();
 	uint8_t  consumeUInt8();
@@ -84,6 +86,9 @@ public:
 	uint16_t consumeBigEndianUInt16();
 	uint32_t consumeBigEndianUInt32();
 	uint64_t consumeBigEndianUInt64();
+	int16_t consumeBigEndianInt16();
+	int32_t consumeBigEndianInt32();
+	int64_t consumeBigEndianInt64();
 	double consumeBigEndianDouble();	
 	
 	// helpers

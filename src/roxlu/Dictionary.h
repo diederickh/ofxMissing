@@ -9,6 +9,8 @@
 #include <map>
 #include <iomanip>
 #include <iostream>
+#include <vector>
+#include "roxlu/IOBuffer.h"
 
 #define IN_MAP(m,k)	((bool)((m).find((k))!=(m).end()))
 #define VAR_INDEX_VALUE "__index__value__"
@@ -22,11 +24,11 @@ namespace roxlu {
 		,D_BOOL			= 	2
 		
 		,D_INT8			=	3
-		,D_INT16		=	4
-		,D_INT32		=	5
-		,D_INT64		=	6
+		,D_INT16			=	4
+		,D_INT32			=	5
+		,D_INT64			=	6
 
-		,D_UINT8		=	7
+		,D_UINT8			=	7
 		,D_UINT16		=	8
 		,D_UINT32		=	9
 		,D_UINT64		=	10
@@ -35,7 +37,7 @@ namespace roxlu {
 		,D_DOUBLE		= 	12
 		,D_STRING		=	13
 		,D_MAP			= 	14
-		,D_BYTEARRAY	=	15
+		,D_BYTEARRAY		=	15
 	};
 
 	struct DictionaryMap;
@@ -114,9 +116,13 @@ namespace roxlu {
 		
 		string toJSON();
 		string toXML();
+		bool toBinary(IOBuffer& buffer);
+		static bool fromBinary(IOBuffer& buffer, Dictionary& result); // make sure the buffer is reset() before calling
+		
+		bool isNumeric();
+		bool isBoolean();
 		
 		// string functions
-	
 		void replaceString(string& target, string search, string replacement);
 		
 		// destructor related
@@ -136,6 +142,7 @@ namespace roxlu {
 		void removeAt(const uint32_t index);
 
 		DictionaryType type;
+		typedef map<string, Dictionary>::iterator iterator;
 		map<string, Dictionary>::iterator begin();
 		map<string, Dictionary>::iterator end();
 	private:	

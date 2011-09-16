@@ -279,6 +279,10 @@ void IOBuffer::recycle() {
 	consumed = 0;
 	published = 0;
 }
+void IOBuffer::reset() {
+	consumed = 0; 
+	published = 0;
+}
 
 
 // Retrieve from buffer and return data
@@ -396,6 +400,29 @@ double IOBuffer::consumeBigEndianDouble() {
 	return d;
 }
 
+int16_t IOBuffer::consumeBigEndianInt16() {
+	int16_t val = 0;
+	memcpy(&val, buffer+consumed, 2);
+	val = FromBE16(val);
+	consumed += 2;
+	return val;
+}
+
+int32_t IOBuffer::consumeBigEndianInt32() {
+	int32_t val = 0;
+	memcpy(&val, buffer+consumed, 4);
+	val = FromBE32(val);
+	consumed += 4;
+	return val;
+}
+
+int64_t IOBuffer::consumeBigEndianInt64() {
+	int64_t val = 0;
+	memcpy(&val, buffer+consumed, 8);
+	val = FromBE64(val);
+	consumed += 8;
+	return val;
+}
 
 // Searching for bytes in buffer and returning strings
 // -----------------------------------------------------------------------------
@@ -449,6 +476,11 @@ string IOBuffer::consumeString(uint32_t upToNumBytes) {
 	return str;
 }
 
+// we assume you used storeStringWithSize 
+string IOBuffer::consumeStringWithSize() {
+	uint16_t num_bytes_in_string = consumeBigEndianUInt16();
+	return consumeString(num_bytes_in_string);
+}
 
 // helpers
 //------------------------------------------------------------------------------

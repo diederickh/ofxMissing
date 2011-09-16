@@ -352,7 +352,7 @@ Dictionary& Dictionary::operator[](const char* key) {
 	}  
 			
 //DICT_OPERATOR(bool);	
-DICT_OPERATOR(double);		
+DICT_OPERATOR(double);
 DICT_OPERATOR(int8_t);	
 DICT_OPERATOR(int16_t);			
 DICT_OPERATOR(int32_t);	
@@ -401,6 +401,30 @@ Dictionary::operator bool() {
 			return false;
 		}
 	};
+}
+
+bool Dictionary::isNumeric() {
+	switch(type) {
+		case D_INT8:
+		case D_INT16:
+		case D_INT32:
+		case D_INT64:
+		case D_UINT8:
+		case D_UINT16:
+		case D_UINT32:
+		case D_UINT64:
+		case D_DOUBLE: {
+			return true;
+		}
+		default: {
+			return false;
+		}
+	}
+	//return false;
+}
+
+bool Dictionary::isBoolean() {
+	return type == D_BOOL;
 }
 
 Dictionary::operator string() {
@@ -651,6 +675,175 @@ void Dictionary::escapeJSON(string& v) {
 	replaceString(v, 	"\r", 	"\\r"); 
 	replaceString(v, 	"\t", 	"\\t"); 
 	v = "\"" +v +"\"";
+}
+
+bool Dictionary::toBinary(IOBuffer& buffer) {
+	buffer.storeByte(type);
+	switch(type) {
+		case D_NULL:
+		case D_UNDEFINED: {
+			return true;
+			break;
+		}
+		case D_BOOL: {
+			buffer.storeByte((uint8_t)value.b);
+			return true;
+			break;
+		}
+		case D_INT8: {
+			buffer.storeByte(value.i8);
+			return true;
+			break;
+		}
+		case D_INT16: {
+			buffer.storeBigEndianUInt16(value.i16);
+			return true;
+			break;
+		}
+		case D_INT32: {
+			buffer.storeBigEndianUInt32(value.i32);
+			return true;
+			break;
+		}
+		case D_INT64: {
+			buffer.storeBigEndianUInt64(value.i64);
+			return true;
+			break;
+		}
+		case D_UINT8: {
+			buffer.storeByte(value.ui8);
+			return true;
+			break;
+		}
+		case D_UINT16: {
+			buffer.storeBigEndianUInt16(value.ui16);
+			return true;
+			break;
+		}
+		case D_UINT32: {
+			buffer.storeBigEndianUInt32(value.ui32);
+			return true;
+			break;
+		}
+		case D_UINT64: {
+			buffer.storeBigEndianUInt64(value.ui64);
+			return true;
+			break;
+		}
+		case D_DOUBLE: {
+			buffer.storeBigEndianUInt64(value.d);
+			return true;
+			break;
+		}
+		case D_STRING: {
+			buffer.storeStringWithSize(*value.s);
+			return true; 
+			break;
+		}
+		case D_MAP: {
+			bool is_array = isArray();
+			buffer.storeByte(is_array);
+			
+			uint32_t length = getMapSize();
+			buffer.storeBigEndianUInt32(length);
+			
+			Dictionary::iterator it = begin();
+			while(it != end()) {
+				buffer.storeStringWithSize(it->first);
+				IOBuffer recursed_buffer;
+				if(!it->second.toBinary(recursed_buffer)) {
+					printf("Dictionary.toBinary(): unable to serialize dictionary\n");
+					return false;
+				}
+				else {
+					buffer.storeBuffer(recursed_buffer);
+				}
+				++it;
+			}
+			return true;
+			break;
+		}
+		
+		default: {
+			printf("Dictionary.toBinary(): type not handled: %u\n", type);
+			break;
+		}
+	};
+	return true;
+}
+
+bool Dictionary::fromBinary(IOBuffer& buffer, Dictionary& result) {
+	///uint32_t consumed = buffer.consumed;
+	uint8_t stored_type = buffer.consumeByte();
+	switch(stored_type) {
+		case D_NULL: {
+			result.reset(false);
+			return true;
+		}
+		case D_UNDEFINED: {
+			result.reset(true);
+			return true;
+		}
+		case D_BOOL: {
+			result = (bool)buffer.consumeByte();
+			return true;
+		}
+		case D_INT8: {
+			result = (int8_t)buffer.consumeByte();
+			return true;
+		}
+		case D_INT16: {
+			result = (int16_t)buffer.consumeBigEndianInt16();
+			return true;
+		}
+		case D_INT32: {
+			result = (int32_t)buffer.consumeBigEndianInt32();
+			return true;
+		}
+		case D_UINT8: {
+			result = (uint8_t)buffer.consumeByte();
+			return true;
+		}
+		case D_UINT16: {
+			result = (uint16_t)buffer.consumeBigEndianUInt16();
+			return true;
+		}
+		case D_UINT32: {
+			result = (uint32_t)buffer.consumeBigEndianUInt32();
+			return true;
+		}
+		case D_UINT64: {
+			result = (uint64_t)buffer.consumeBigEndianUInt64();
+			return true;
+		}
+		case D_DOUBLE: {
+			result = (double)buffer.consumeBigEndianDouble();
+			return true;
+		}
+		case D_STRING: {
+			result = (string)buffer.consumeStringWithSize();
+			return true;
+		}
+		case D_MAP: {
+			bool is_array = (bool)buffer.consumeByte();
+			result.isArray(is_array);
+			uint32_t length = buffer.consumeBigEndianUInt32();
+			for(uint32_t i = 0; i < length; i++) {
+				string key = buffer.consumeStringWithSize();
+				if(!Dictionary::fromBinary(buffer, result[key])) {
+					printf("Dictionary.fromBinary: cannot deserialize map for key: %s\n", key.c_str());
+					return false;
+				}
+			}
+			return true;
+		}
+		default: {
+			printf("Dictionary.fromBinary, unhandled type: %02X\n", stored_type);
+			return false;
+		}
+		
+	};
+	return true;
 }
 
 // String functions.

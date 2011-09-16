@@ -11,6 +11,10 @@ using std::set;
 	extern "C" {
 #endif
 
+void toLower(string& data);
+void toUpper(string& data);
+string getDataPath();
+string getCurrentWorkingDirectory();
 void trim(string& str);
 void setFrameRateAsWindowTitle();
 void setupOF(int fps = 60); // 60 FPS, vertical sync, dark background
