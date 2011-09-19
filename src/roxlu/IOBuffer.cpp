@@ -178,37 +178,37 @@ void IOBuffer::storeRepeat(uint8_t byte, uint32_t numBytes) {
 	published += numBytes;
 }
 
-void IOBuffer::storeUInt8(uint8_t byte) {
+void IOBuffer::storeUI8(uint8_t byte) {
 	storeByte(byte);
 }
 
-void IOBuffer::storeUInt16(uint16_t data) {
+void IOBuffer::storeUI16(uint16_t data) {
 	ensureSize(16);
 	memcpy(buffer+published, &data, 2);
 	published += 2;
 }
 
-void IOBuffer::storeUInt32(uint32_t data) {
+void IOBuffer::storeUI32(uint32_t data) {
 	ensureSize(32);
 	memcpy(buffer+published, &data, 4);
 	published += 4;
 }
 
-void IOBuffer::storeBigEndianUInt16(uint16_t data) {
+void IOBuffer::storeBigEndianUI16(uint16_t data) {
 	ensureSize(16);
 	data = ToBE16(data);
 	memcpy(buffer+published, &data, 2);
 	published += 2;
 }
 
-void IOBuffer::storeBigEndianUInt32(uint32_t data) {
+void IOBuffer::storeBigEndianUI32(uint32_t data) {
 	ensureSize(4);
 	data = ToBE32(data);
 	memcpy(buffer+published, &data, 4);
 	published += 4;
 }
 
-void IOBuffer::storeBigEndianUInt64(uint64_t data) {
+void IOBuffer::storeBigEndianUI64(uint64_t data) {
 	ensureSize(8);
 	data = ToBE64(data);
 	memcpy(buffer+published, &data, 8);
@@ -234,7 +234,7 @@ void IOBuffer::storeString(string data) {
 
 // stores a uint16_t (big endian) + string
 void IOBuffer::storeStringWithSize(string data) {
-	storeBigEndianUInt16(data.size());
+	storeBigEndianUI16(data.size());
 	storeString(data);
 }
 
@@ -268,6 +268,10 @@ bool IOBuffer::reuse(uint32_t numBytes) {
 	return true;
 }
 
+void IOBuffer::setNumBytesStored(uint32_t numBytes) {
+	published = numBytes;
+}
+
 uint32_t IOBuffer::getNumBytesStored() {
 	return published;
 }
@@ -293,17 +297,17 @@ void IOBuffer::consumeBytes(uint8_t* buf, uint32_t numBytes) {
 }
 
 uint8_t IOBuffer::consumeByte() {
-	return consumeUInt8();
+	return consumeUI8();
 }
 
-uint8_t IOBuffer::consumeUInt8() {
+uint8_t IOBuffer::consumeUI8() {
 	uint8_t val = 0;
 	memcpy(&val, buffer+consumed, 1);
 	consumed += 1;
 	return val;
 }
 
-uint16_t IOBuffer::consumeUInt16() {
+uint16_t IOBuffer::consumeUI16() {
 	uint16_t val = 0;
 	memcpy(&val, buffer+consumed, 2);
 	consumed += 2;
@@ -311,42 +315,42 @@ uint16_t IOBuffer::consumeUInt16() {
 
 }
 
-uint32_t IOBuffer::consumeUInt32() {
+uint32_t IOBuffer::consumeUI32() {
 	uint32_t val = 0;
 	memcpy(&val, buffer+consumed, 4);
 	consumed += 4;
 	return val;
 }
 
-uint64_t IOBuffer::consumeUInt64() {
+uint64_t IOBuffer::consumeUI64() {
 	uint64_t val = 0;
 	memcpy(&val, buffer+consumed, 8);
 	consumed += 8;
 	return val;
 }
 
-int8_t  IOBuffer::consumeInt8() {
+int8_t  IOBuffer::consumeI8() {
 	int8_t val = 0;
 	memcpy(&val, buffer+consumed, 1);
 	consumed += 1;
 	return val;
 }
 
-int16_t IOBuffer::consumeInt16() {
+int16_t IOBuffer::consumeI16() {
 	int16_t val = 0;
 	memcpy(&val, buffer+consumed, 2);
 	consumed += 2;
 	return val;
 }
 
-int32_t IOBuffer::consumeInt32() {
+int32_t IOBuffer::consumeI32() {
 	int32_t val = 0;
 	memcpy(&val, buffer+consumed, 4);
 	consumed += 4;
 	return val;
 }
 
-int64_t IOBuffer::consumeInt64() {
+int64_t IOBuffer::consumeI64() {
 	int64_t val = 0;
 	memcpy(&val, buffer+consumed, 8);
 	consumed += 8;
@@ -362,25 +366,23 @@ double IOBuffer::consumeDouble() {
 
 // when you assume the data is big endian, convert it to system 
 // -----------------------------------------------------------------------------
-uint16_t IOBuffer::consumeBigEndianUInt16() {
+uint16_t IOBuffer::consumeBigEndianUI16() {
 	uint16_t val = 0;
 	memcpy(&val, buffer+consumed, 2);
 	consumed += 2;
-//	val = ntohsex(val);
 	val = FromBE16(val);
 	return val;
 }
 
-uint32_t IOBuffer::consumeBigEndianUInt32() {
+uint32_t IOBuffer::consumeBigEndianUI32() {
 	uint32_t val = 0;
 	memcpy(&val, buffer+consumed, 4);
 	consumed += 4;
-//	val = ntohlex(val);
 	val = FromBE32(val);
 	return val;
 }
 
-uint64_t IOBuffer::consumeBigEndianUInt64() {
+uint64_t IOBuffer::consumeBigEndianUI64() {
 	uint64_t val = 0;
 	memcpy(&val, buffer+consumed, 8);
 	val = FromBE64(val);
@@ -400,7 +402,7 @@ double IOBuffer::consumeBigEndianDouble() {
 	return d;
 }
 
-int16_t IOBuffer::consumeBigEndianInt16() {
+int16_t IOBuffer::consumeBigEndianI16() {
 	int16_t val = 0;
 	memcpy(&val, buffer+consumed, 2);
 	val = FromBE16(val);
@@ -408,7 +410,7 @@ int16_t IOBuffer::consumeBigEndianInt16() {
 	return val;
 }
 
-int32_t IOBuffer::consumeBigEndianInt32() {
+int32_t IOBuffer::consumeBigEndianI32() {
 	int32_t val = 0;
 	memcpy(&val, buffer+consumed, 4);
 	val = FromBE32(val);
@@ -416,7 +418,7 @@ int32_t IOBuffer::consumeBigEndianInt32() {
 	return val;
 }
 
-int64_t IOBuffer::consumeBigEndianInt64() {
+int64_t IOBuffer::consumeBigEndianI64() {
 	int64_t val = 0;
 	memcpy(&val, buffer+consumed, 8);
 	val = FromBE64(val);
@@ -478,8 +480,14 @@ string IOBuffer::consumeString(uint32_t upToNumBytes) {
 
 // we assume you used storeStringWithSize 
 string IOBuffer::consumeStringWithSize() {
-	uint16_t num_bytes_in_string = consumeBigEndianUInt16();
+	uint16_t num_bytes_in_string = consumeBigEndianUI16();
 	return consumeString(num_bytes_in_string);
+}
+
+// operators
+//------------------------------------------------------------------------------
+uint8_t& IOBuffer::operator[](uint32_t index) const {
+	return buffer[index];
 }
 
 // helpers
@@ -514,7 +522,7 @@ void IOBuffer::printDoubleAsHex(double d) {
 	printf("\n");
 }
 
-void IOBuffer::printUInt16AsHex(uint16_t toPrint) {
+void IOBuffer::printUI16AsHex(uint16_t toPrint) {
 	uint8_t tmp_buf[2];
 	memcpy(tmp_buf, &toPrint, 2);
 	printf("%02X %02X\n", tmp_buf[0], tmp_buf[1]);

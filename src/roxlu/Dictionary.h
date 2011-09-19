@@ -90,6 +90,8 @@ namespace roxlu {
 		bool operator==(DictionaryType type);
 		bool operator!=(DictionaryType type);
 		
+		friend std::ostream& operator<<(std::ostream& os, roxlu::Dictionary& dict);
+		
 		// retrieve as a forced type
 		uint8_t  getAsUInt8();
 		uint16_t getAsUInt16();
@@ -117,8 +119,7 @@ namespace roxlu {
 		string toJSON();
 		string toXML();
 		bool toBinary(IOBuffer& buffer);
-		static bool fromBinary(IOBuffer& buffer, Dictionary& result); // make sure the buffer is reset() before calling
-		
+		bool fromBinary(IOBuffer& buffer); // make sure the buffer is reset() before calling
 		bool isNumeric();
 		bool isBoolean();
 		
@@ -145,7 +146,9 @@ namespace roxlu {
 		typedef map<string, Dictionary>::iterator iterator;
 		map<string, Dictionary>::iterator begin();
 		map<string, Dictionary>::iterator end();
+		
 	private:	
+		bool fromBinaryInternal(IOBuffer& buffer, Dictionary& result);
 		bool serializeToJSON(string &result);
 		void escapeJSON(string &value);
 		string toString(string name="", uint32_t indent = 0);
@@ -157,9 +160,9 @@ namespace roxlu {
 			int32_t		i32;
 			int64_t		i64;
 			uint8_t		ui8;
-			uint16_t	ui16;
-			uint32_t	ui32;
-			uint64_t	ui64;
+			uint16_t		ui16;
+			uint32_t		ui32;
+			uint64_t		ui64;
 			double		d;
 			string*		s;
 			DictionaryMap* m;
@@ -167,5 +170,12 @@ namespace roxlu {
 		
 		void copyFrom(const Dictionary& other);
 	};
+	
+	inline std::ostream& operator<<(std::ostream& os, Dictionary& dict)  {
+		os << dict.toJSON();
+		return os ;
+	}
 }
+
+
 #endif

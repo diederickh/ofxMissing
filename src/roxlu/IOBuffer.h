@@ -18,7 +18,7 @@ using std::ofstream;
 
 class IOBuffer {
 public:	
-	uint8_t* 	buffer;
+	uint8_t* buffer;
 	uint32_t	size;
 	uint32_t	published;
 	uint32_t	consumed;
@@ -44,22 +44,23 @@ public:
 	bool storeBytes(const char* someData, const uint32_t numBytes);
 	bool storeBytes(const uint8_t* someData, const uint32_t numBytes);
 	void storeByte(uint8_t byte);
-	void storeUInt8(uint8_t byte);
-	void storeUInt16(uint16_t data);
-	void storeUInt32(uint32_t data);
+	void storeUI8(uint8_t byte);
+	void storeUI16(uint16_t data);
+	void storeUI32(uint32_t data);
 	void storeRepeat(uint8_t byte, uint32_t numBytes); // rename!
 	void storeBuffer(IOBuffer& other); // copies only stored data
 	void storeBuffer(IOBuffer& other, uint32_t numBytes);
 
 	void storeString(string data);
 	void storeStringWithSize(string data); // adds a uint16_t with the size of the string 
-	void storeBigEndianUInt16(uint16_t data);
-	void storeBigEndianUInt32(uint32_t data);
-	void storeBigEndianUInt64(uint64_t data);
+	void storeBigEndianUI16(uint16_t data);
+	void storeBigEndianUI32(uint32_t data);
+	void storeBigEndianUI64(uint64_t data);
 	void storeBigEndianDouble(double data);
 	
 	// get the number of bytes published.
-	uint32_t getNumBytesStored(); // use size()
+	uint32_t getNumBytesStored();
+	void setNumBytesStored(uint32_t numBytes); // for direct manipulation of buffer.
 	bool hasBytesToRead();
 					
 	// reading data back from buffer moving read head
@@ -71,31 +72,34 @@ public:
 	string consumeStringWithSize();
 
 	uint8_t consumeByte();
-	uint8_t  consumeUInt8();
-	uint16_t consumeUInt16();
-	uint32_t consumeUInt32();
-	uint64_t consumeUInt64();
+	uint8_t  consumeUI8();
+	uint16_t consumeUI16();
+	uint32_t consumeUI32();
+	uint64_t consumeUI64();
 
-	int8_t  consumeInt8();
-	int16_t consumeInt16();
-	int32_t consumeInt32();
-	int64_t consumeInt64();
+	int8_t  consumeI8();
+	int16_t consumeI16();
+	int32_t consumeI32();
+	int64_t consumeI64();
 	double consumeDouble();
 	
 	// when you want to convert from BE -> LE
-	uint16_t consumeBigEndianUInt16();
-	uint32_t consumeBigEndianUInt32();
-	uint64_t consumeBigEndianUInt64();
-	int16_t consumeBigEndianInt16();
-	int32_t consumeBigEndianInt32();
-	int64_t consumeBigEndianInt64();
+	uint16_t consumeBigEndianUI16();
+	uint32_t consumeBigEndianUI32();
+	uint64_t consumeBigEndianUI64();
+	int16_t consumeBigEndianI16();
+	int32_t consumeBigEndianI32();
+	int64_t consumeBigEndianI64();
 	double consumeBigEndianDouble();	
+	
+	// operators
+	uint8_t& operator[](uint32_t index) const;
 	
 	// helpers
 	inline uint8_t getAt(uint8_t position);
 	void printHex(uint32_t start = 0, uint32_t end = 0);
 	void printDoubleAsHex(double toPrint);
-	void printUInt16AsHex(uint16_t toPrint);
+	void printUI16AsHex(uint16_t toPrint);
 	void recycle();
 	bool ensureSize(uint32_t expectedSize);
 	void cleanup();
