@@ -11,6 +11,7 @@ IOBuffer::IOBuffer()
 ,consumed(0)
 ,min_chunk_size(4096)
 {
+	setup(); // should we do this? or its up to the user (?)
 }
 
 IOBuffer::~IOBuffer() {

@@ -98,7 +98,7 @@ namespace roxlu {
 		uint32_t getAsUInt32();
 		uint64_t getAsUint64();
 		
-		int8_t 	 getAsInt8();
+		int8_t 	getAsInt8();
 		int16_t  getAsInt16();
 		int32_t  getAsInt32();
 		int64_t  getAsInt64();
