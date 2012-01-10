@@ -70,7 +70,7 @@ void IOBuffer::setup(uint32_t expectedSize) {
 		|| (consumed != 0)
 	)
 	{
-		printf("iobuffer error: buffer has been setup already\n");
+		//printf("iobuffer error: buffer has been setup already\n");
 		return;
 	}
 	

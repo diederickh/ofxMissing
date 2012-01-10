@@ -82,7 +82,7 @@ bool fileExists(string path, bool relativeToDataDir) {
 // Get Files by a globber filePathWithGlob example: /data/dir/filename* 
 set<string> getFiles(string filePathWithGlob, bool relativeToDataDir) {
 	if(relativeToDataDir) {
-		filePathWithGlob = getDataPath();
+		filePathWithGlob = getDataPath() +filePathWithGlob;
 	}
 	set<string> files;
 	try {
